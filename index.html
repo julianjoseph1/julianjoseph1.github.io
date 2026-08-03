@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Julian Joseph — Detection Engineering &amp; Security Operations</title>
+<meta name="description" content="Julian Joseph — detection engineering and security operations. Microsoft Sentinel, Defender for Endpoint, Entra ID. 42 months in security operations. M.Eng Cybersecurity, University of Maryland.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — observability-console convention: neutral near-black
+   surfaces, one interactive azure, a 6-hue categorical series
+   scale, and a separate SIEM severity scale.
+   ============================================================ */
+:root{
+  --bg:#0E1013;
+  --surface:#16181D;
+  --surface-2:#1C1F25;
+  --surface-3:#22262D;
+  --line:#262A31;
+  --line-2:#333842;
+  --text:#D4D8DE;
+  --text-hi:#F2F4F7;
+  --muted:#828B98;
+  --muted-2:#5F6875;
+
+  --accent:#4C9AFF;
+
+  --s1:#54B399;
+  --s2:#6092C0;
+  --s3:#D6BF57;
+  --s4:#CA8EAE;
+  --s5:#E7664C;
+  --s6:#9170B8;
+
+  --crit:#E5484D;
+  --high:#F5A623;
+  --med:#E2C541;
+  --low:#4C9AFF;
+  --info:#828B98;
+
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+
+  --nav:58px;
+  --nav-open:226px;
+  --bar:48px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);
+  font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+h1,h2,h3{margin:0;font-weight:600}
+
+/* ============ app bar ============ */
+.appbar{position:fixed;top:0;left:0;right:0;height:var(--bar);z-index:70;
+  display:flex;align-items:center;gap:14px;padding:0 12px;
+  background:var(--surface-2);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:var(--text-hi)}
+.brand svg{width:17px;height:17px;color:var(--accent)}
+.crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.crumb b{color:var(--text);font-weight:500}
+.ab-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pill{display:flex;align-items:center;gap:7px;height:28px;padding:0 11px;
+  border:1px solid var(--line-2);background:var(--surface);
+  font-family:var(--mono);font-size:12px;color:var(--text);white-space:nowrap}
+.pill.ghost{border-style:dashed;color:var(--muted)}
+.live{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.led{width:6px;height:6px;border-radius:50%;background:var(--s1);flex:none;
+  box-shadow:0 0 6px rgba(84,179,153,.7);animation:blip 2.6s ease-in-out infinite}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.3}}
+.mono-badge{width:28px;height:28px;display:grid;place-items:center;
+  background:var(--accent);color:#06121F;font-weight:700;font-size:11.5px}
+
+/* ============ left nav ============ */
+.nav{position:fixed;top:var(--bar);bottom:0;left:0;width:var(--nav);z-index:65;
+  background:var(--surface-2);border-right:1px solid var(--line);
+  padding:10px 0;display:flex;flex-direction:column;
+  overflow-x:hidden;overflow-y:auto;
+  transition:width .22s cubic-bezier(.25,.8,.25,1)}
+.nav:hover,.nav:focus-within{width:var(--nav-open);box-shadow:7px 0 20px rgba(0,0,0,.5)}
+.nav .lb,.nav .n{opacity:0;white-space:nowrap;transition:opacity .16s ease}
+.nav:hover .lb,.nav:focus-within .lb,.nav:hover .n,.nav:focus-within .n{opacity:1}
+.nav-h svg{width:12px;height:12px;flex:none;transition:transform .22s ease;color:var(--muted-2)}
+.nav:hover .nav-h svg,.nav:focus-within .nav-h svg{transform:rotate(180deg)}
+.nav-h{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);padding:7px 0 7px 22px}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 14px 9px 21px;
+  color:var(--text);font-size:14px;border-left:2px solid transparent;
+  transition:background .15s ease,border-color .15s ease,color .15s ease}
+.nav a:hover{background:rgba(76,154,255,.07);color:var(--text-hi);text-decoration:none}
+.nav a.on{border-left-color:var(--accent);background:rgba(76,154,255,.1);color:var(--text-hi)}
+.nav a svg{width:15px;height:15px;flex:none;opacity:.75}
+.nav a .n{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+.nav-foot{margin-top:auto;padding:12px 14px 6px 21px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted-2);
+  opacity:0;white-space:nowrap;transition:opacity .16s ease}
+.nav:hover .nav-foot,.nav:focus-within .nav-foot{opacity:1}
+
+/* ============ shell ============ */
+.shell{margin:var(--bar) 0 0 var(--nav);padding:14px}
+
+/* ============ section bar ============ */
+.secbar{display:flex;align-items:center;gap:12px;margin:22px 0 10px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted)}
+.secbar b{color:var(--text-hi);font-weight:600;letter-spacing:.12em}
+.secbar .ln{flex:1;height:1px;background:var(--line)}
+.secbar .ct{color:var(--muted-2);letter-spacing:.06em;text-transform:none}
+
+/* ============ grid + panels ============ */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;
+  align-items:start;scroll-margin-top:66px}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}
+.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}
+.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+
+.p{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;
+  opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+.p.in{opacity:1;transform:none}
+.p-h{display:flex;align-items:center;gap:9px;min-height:36px;padding:0 12px;flex:none;
+  background:var(--surface-2);border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted)}
+.p-h b{color:var(--text-hi);font-weight:600;letter-spacing:.1em}
+.p-h .right{margin-left:auto;letter-spacing:.04em;text-transform:none;color:var(--muted-2)}
+.p-b{padding:14px;flex:1}
+.p-b.flush{padding:0}
+.p-f{border-top:1px solid var(--line);padding:8px 12px;font-family:var(--mono);
+  font-size:11px;color:var(--muted-2);letter-spacing:.04em}
+
+/* ============ entity card ============ */
+.ent{display:flex;gap:11px;align-items:flex-start}
+.mono-lg{width:60px;height:60px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--accent),#2E6FC4);color:#06121F;
+  font-weight:700;font-size:23px;letter-spacing:-.02em}
+.ent-name{font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--text-hi);line-height:1.1}
+.ent-name .ch{opacity:0}
+.ent-name.go .ch{opacity:1;transition:opacity 1ms linear;transition-delay:calc(var(--i) * 34ms)}
+.caret{display:inline-block;width:.42em;height:.78em;background:var(--accent);
+  margin-left:.06em;vertical-align:-.02em;animation:blink .8s steps(1) infinite}
+.caret.off{opacity:0;animation:none;transition:opacity .4s ease}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+.ent-role{font-family:var(--mono);font-size:12px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--accent);margin-top:5px}
+.ent-meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.75}
+.ent-links{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--mono);font-size:11.5px;padding:3px 8px;border:1px solid var(--line-2);
+  color:var(--text);background:var(--surface-2);white-space:nowrap}
+.tag.act{border-color:rgba(76,154,255,.45);color:var(--accent)}
+.tag.todo{border-style:dashed;border-color:rgba(245,166,35,.5);color:var(--high)}
+
+/* ============ KPI ============ */
+.kpi{display:flex;flex-direction:column;height:100%;justify-content:space-between}
+.kpi-k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px}
+.kpi-v{font-size:38px;font-weight:600;letter-spacing:-.025em;color:var(--text-hi);
+  line-height:1;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:3px}
+.kpi-v .u{font-size:16px;color:var(--muted);font-weight:500}
+.kpi-v.sm{font-size:19px;letter-spacing:0;line-height:1.3}
+.kpi-v.ok{color:var(--s1)}
+.kpi-n{font-family:var(--mono);font-size:11px;color:var(--muted-2);margin-top:8px}
+
+/* ============ charts ============ */
+.chart{width:100%;display:block;overflow:visible}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted-2);font-family:var(--mono);font-size:11px}
+.chart .area{fill:url(#ag);opacity:0;transition:opacity .8s ease .25s}
+.chart.on .area{opacity:1}
+.chart .ln{fill:none;stroke:var(--s2);stroke-width:1.6;
+  stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 1.5s ease}
+.chart.on .ln{stroke-dashoffset:0}
+.chart .mk{fill:var(--surface);stroke:var(--s2);stroke-width:1.5;opacity:0;
+  transition:opacity .3s ease}
+.chart.on .mk{opacity:1;transition-delay:1.1s}
+.chart .anno{fill:var(--muted);font-family:var(--mono);font-size:11px;opacity:0;
+  transition:opacity .5s ease 1.2s}
+.chart.on .anno{opacity:1}
+.chart .adash{stroke:var(--line-2);stroke-width:1;stroke-dasharray:2 3;opacity:0;
+  transition:opacity .5s ease 1.2s}
+.chart.on .adash{opacity:1}
+
+.hb{display:grid;grid-template-columns:136px 1fr 30px;gap:11px;align-items:center;
+  margin-bottom:9px;font-size:13px}
+.hb:last-child{margin-bottom:0}
+.hb-k{color:var(--text);text-align:right;font-size:12.5px;line-height:1.35}
+.hb-t{height:18px;background:var(--surface-2);border:1px solid var(--line);position:relative}
+.hb-f{position:absolute;left:0;top:0;bottom:0;width:0;
+  transition:width .85s cubic-bezier(.25,.8,.25,1);transition-delay:var(--d,0ms)}
+.hb-v{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+
+.donut-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.donut{width:154px;height:154px;transform:rotate(-24deg) scale(.93);opacity:0;
+  transition:transform .7s cubic-bezier(.25,.8,.25,1),opacity .6s ease}
+.donut.on{transform:none;opacity:1}
+.donut circle{fill:none;stroke-width:15}
+.dlab{fill:var(--text-hi);font-family:var(--sans);font-size:21px;font-weight:600;text-anchor:middle}
+.dsub{fill:var(--muted);font-family:var(--mono);font-size:9px;text-anchor:middle;letter-spacing:.1em}
+.lg{display:grid;gap:4px;width:100%}
+.lg-i{display:grid;grid-template-columns:11px 1fr 22px;gap:9px;align-items:center;
+  font-size:13px;color:var(--text)}
+.lg-sw{width:11px;height:11px}
+.lg-v{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+
+/* ============ gantt ============ */
+.gt{padding:14px 14px 8px}
+.gt-scroll{overflow-x:auto}
+.gt-in{min-width:470px}
+.gt-r{display:grid;grid-template-columns:92px 1fr;gap:11px;align-items:center;margin-bottom:8px}
+.gt-k{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);text-align:right}
+.gt-t{position:relative;height:26px;background:var(--surface-2);border:1px solid var(--line)}
+.gt-b{position:absolute;top:-1px;height:26px;display:flex;align-items:center;padding:0 9px;
+  font-family:var(--mono);font-size:11.5px;white-space:nowrap;overflow:hidden;box-sizing:border-box;
+  clip-path:inset(0 100% 0 0);transition:clip-path .8s cubic-bezier(.25,.8,.25,1);
+  transition-delay:var(--d,0ms)}
+.gt.on .gt-b{clip-path:inset(0 0 0 0)}
+.gt-b.w1{background:rgba(96,146,192,.26);border:1px solid var(--s2);color:var(--text-hi)}
+.gt-b.w2{background:rgba(84,179,153,.26);border:1px solid var(--s1);color:var(--text-hi)}
+.gt-b.ed{background:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(255,255,255,.05) 5px 10px);
+  border:1px solid var(--line-2);color:var(--muted)}
+.gt-ax{display:grid;grid-template-columns:92px 1fr;gap:11px;margin-top:2px}
+.gt-tk{position:relative;height:17px}
+.gt-tk span{position:absolute;top:2px;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10.5px;color:var(--muted-2)}
+
+/* ============ tables ============ */
+.tb-h,.tb-r{display:grid;align-items:center;gap:12px;padding:0 12px}
+.tb-h{min-height:32px;background:var(--surface-2);border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted)}
+.tb-r{min-height:38px;padding-top:8px;padding-bottom:8px;
+  border-bottom:1px solid var(--line);font-size:14px}
+.tb-r:last-child{border-bottom:0}
+.tb-r:hover{background:var(--surface-2)}
+.num{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.id{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.nm{color:var(--text-hi);font-weight:500}
+.sub{color:var(--muted);font-size:12.5px}
+
+.sv{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+.sv i{width:8px;height:8px;flex:none}
+.sv.crit{color:var(--crit)}.sv.crit i{background:var(--crit)}
+.sv.high{color:var(--high)}.sv.high i{background:var(--high)}
+.sv.med{color:var(--med)}.sv.med i{background:var(--med)}
+.sv.low{color:var(--low)}.sv.low i{background:var(--low)}
+
+/* ============ query panel ============ */
+.qctl{display:grid;grid-template-columns:196px 152px 1fr auto;gap:11px;align-items:end;
+  margin-bottom:13px}
+select{width:100%;background:var(--bg);border:1px solid var(--line-2);color:var(--text);
+  padding:9px 11px;font-family:var(--mono);font-size:13px}
+select:focus{border-color:var(--accent);outline:none}
+.qbtns{display:flex;gap:6px}
+.btn.ghost{background:none;border:1px solid var(--line-2);color:var(--text);font-weight:500}
+.btn.ghost:hover{background:var(--surface-2)}
+.q{margin:0;border:1px solid var(--line);background:var(--bg);padding:12px 14px;
+  font-family:var(--mono);font-size:13px;line-height:1.8;color:var(--text);
+  overflow-x:auto;white-space:pre}
+.q .kw{color:var(--s6)}
+.q .op{color:var(--muted)}
+.q .st{color:var(--s1)}
+.q .fn{color:var(--s3)}
+.q .cm{color:var(--muted-2)}
+.donut circle,.lg-i{transition:opacity .3s ease}
+.dim{opacity:.16}
+.lg-i.dim{opacity:.35}
+.empty{padding:20px 12px;font-family:var(--mono);font-size:13px;color:var(--muted);
+  border-bottom:1px solid var(--line)}
+.tag.pv{cursor:pointer}
+.tag.pv:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ============ project register ============ */
+.reg-h,.reg-r{grid-template-columns:26px 108px 1fr 152px 106px 104px}
+.reg-row{border-bottom:1px solid var(--line)}
+.reg-row:last-child{border-bottom:0}
+.reg-r{width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;
+  cursor:pointer;display:grid;align-items:center;gap:12px;padding:10px 12px;min-height:42px}
+.reg-r:hover{background:var(--surface-2)}
+.reg-x{font-family:var(--mono);font-size:13px;color:var(--muted);transition:transform .25s ease}
+.reg-row.open .reg-x{transform:rotate(90deg);color:var(--accent)}
+.reg-row.open>.reg-r{background:var(--surface-2)}
+.reg-d{max-height:0;overflow:hidden;background:#12141A;
+  transition:max-height .4s cubic-bezier(.3,.8,.25,1)}
+.reg-row.open .reg-d{max-height:1700px}
+.reg-in{padding:16px 18px 20px 42px;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}
+.fk{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:4px}
+.fv{font-size:14px;line-height:1.65;color:var(--text)}
+.tq{margin-top:14px;grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;
+  padding-top:14px;border-top:1px solid var(--line)}
+
+/* ============ role detail ============ */
+.role-m{font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.8;
+  padding-bottom:11px;margin-bottom:11px;border-bottom:1px solid var(--line)}
+.role-m b{color:var(--text-hi);font-weight:600;font-size:15px;font-family:var(--sans)}
+.bl{margin:0;padding:0;list-style:none}
+.bl li{position:relative;padding-left:16px;margin-bottom:8px;font-size:14px;line-height:1.6}
+.bl li:last-child{margin-bottom:0}
+.bl li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;background:var(--line-2)}
+
+/* ============ analyst summary ============ */
+.sum p{margin:0 0 13px;font-size:15px;line-height:1.7;max-width:68ch}
+.sum p:last-child{margin-bottom:0}
+.sum strong{color:var(--text-hi);font-weight:600}
+
+/* ============ skills ============ */
+.sk{display:grid;gap:13px}
+.sk-g h3{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  margin-bottom:5px;font-weight:500}
+.sk-t{display:flex;flex-wrap:wrap;gap:5px}
+
+/* ============ contact ============ */
+.frm{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frm .w{grid-column:1/-1}
+label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+input,textarea{width:100%;background:var(--bg);border:1px solid var(--line-2);
+  color:var(--text);padding:9px 11px;font-family:var(--mono);font-size:13px}
+input:focus,textarea:focus{border-color:var(--accent);outline:none}
+textarea{resize:vertical;min-height:84px}
+.btn{background:var(--accent);color:#06121F;border:0;padding:10px 21px;cursor:pointer;
+  font-family:var(--mono);font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:600}
+.btn:hover{background:#6BADFF}
+.msg{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:11px}
+.msg.ok{color:var(--s1)}
+.msg.err{color:var(--high)}
+
+.ft{display:flex;gap:22px;flex-wrap:wrap;padding:16px 2px 38px;
+  font-family:var(--mono);font-size:11px;color:var(--muted-2);letter-spacing:.04em}
+
+/* ============ boot motion ============ */
+[data-rise]{opacity:0;transform:translateY(7px)}
+.booted [data-rise]{opacity:1;transform:none;
+  transition:opacity .5s ease,transform .5s cubic-bezier(.25,.8,.25,1);
+  transition-delay:var(--d,0ms)}
+.ab-right>*,.crumb{opacity:0}
+.booted .ab-right>*,.booted .crumb{opacity:1;transition:opacity .35s ease;
+  transition-delay:var(--d,0ms)}
+.no-anim .ent-name .ch,.no-anim [data-rise],.no-anim .ab-right>*,.no-anim .crumb{
+  opacity:1!important;transform:none!important;transition:none!important}
+.no-anim .caret{display:none}
+.no-anim .p{opacity:1;transform:none}
+.no-anim .gt-b{clip-path:none}
+.no-anim .hb-f{transition:none}
+.no-anim .donut{transform:none;opacity:1}
+.no-anim .chart .ln{stroke-dashoffset:0}
+.no-anim .chart .area,.no-anim .chart .mk,.no-anim .chart .anno,.no-anim .chart .adash{opacity:1}
+
+/* ============ responsive ============ */
+@media(max-width:1380px){
+  .c2{grid-column:span 3}
+  .c3,.c4,.c5{grid-column:span 6}
+  .c7,.c8,.c9{grid-column:span 12}
+}
+@media(max-width:900px){
+  .c2,.c3,.c4,.c5,.c6{grid-column:span 6}
+  .reg-h,.reg-r{grid-template-columns:26px 1fr 104px}
+  .reg-h>*:nth-child(2),.reg-r>*:nth-child(2),
+  .reg-h>*:nth-child(4),.reg-r>*:nth-child(4),
+  .reg-h>*:nth-child(5),.reg-r>*:nth-child(5){display:none}
+  .reg-in{grid-template-columns:1fr;padding-left:14px}
+  .qctl{grid-template-columns:1fr 1fr}
+  .qctl .qbtns{grid-column:1/-1}
+  .frm{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  :root{--nav:0px}
+  .nav{position:static;width:auto;flex-direction:row;overflow-x:auto;
+    border-right:0;border-bottom:1px solid var(--line);padding:0;margin-top:var(--bar)}
+  .nav-h,.nav-foot,.nav a .n{display:none}
+  .nav{width:auto!important;box-shadow:none!important;transition:none}
+  .nav .lb{opacity:1}
+  .nav a{border-left:0;border-bottom:2px solid transparent;padding:9px 11px;white-space:nowrap}
+  .nav a.on{border-left:0;border-bottom-color:var(--accent)}
+  .shell{margin-top:0}
+  .crumb,.pill.ghost{display:none}
+  .c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9{grid-column:span 12}
+  .q{font-size:12px}
+}
+</style>
+<noscript><style>
+.p,[data-rise],.ab-right>*,.crumb{opacity:1!important;transform:none!important}
+.ent-name .ch{opacity:1!important}.caret{display:none}
+.gt-b{clip-path:none!important}.donut{opacity:1!important;transform:none!important}
+.chart .ln{stroke-dashoffset:0!important}
+.chart .area,.chart .mk,.chart .anno,.chart .adash{opacity:1!important}
+.reg-d{max-height:none!important}
+</style></noscript>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
+    SecOps Portfolio
+  </div>
+  <div class="crumb">workspace <b>julian-joseph</b> &nbsp;/&nbsp; <b>candidate-profile</b></div>
+  <div class="ab-right">
+    <div class="pill ghost">Time range: 2018 &ndash; present</div>
+    <div class="pill">42 mo. in scope</div>
+    <div class="live"><i class="led"></i><span id="clock">--:--:--</span> UTC</div>
+    <div class="mono-badge">JJ</div>
+  </div>
+</div>
+
+<nav class="nav" aria-label="Sections">
+  <div class="nav-h">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+    <span class="lb">Dashboard</span>
+  </div>
+  <a href="#index" title="Index" class="on">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span class="lb">Index</span><span class="n">01</span></a>
+  <a href="#about" title="About">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+    <span class="lb">About</span><span class="n">02</span></a>
+  <a href="#experience" title="Experience">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14"/><path d="M8 7V4h8v3"/></svg>
+    <span class="lb">Experience</span><span class="n">03</span></a>
+  <a href="#projects" title="Projects">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h6l2 3h10v11H3z"/></svg>
+    <span class="lb">Projects</span><span class="n">04</span></a>
+  <a href="#education" title="Education">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l10-5 10 5-10 5z"/><path d="M6 11v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>
+    <span class="lb">Education</span><span class="n">05</span></a>
+  <a href="#skills" title="Skills">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="7" cy="17" r="2"/></svg>
+    <span class="lb">Skills</span><span class="n">06</span></a>
+  <a href="#contact" title="Contact">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16"/><path d="M2 6l10 7 10-7"/></svg>
+    <span class="lb">Contact</span><span class="n">07</span></a>
+  <div class="nav-foot">
+    WASHINGTON, D.C. METRO<br>
+    AVAILABLE IMMEDIATELY<br>
+    <a href="https://linkedin.com/in/julianjoseph1">linkedin</a>
+  </div>
+</nav>
+
+<main class="shell">
+
+  <!-- ============ 01 INDEX ============ -->
+  <div class="secbar"><b>01 &middot; Entity profile</b><span class="ln"></span><span class="ct">candidate summary</span></div>
+  <div class="grid" id="index">
+    <section class="p c4">
+      <div class="p-h"><b>Identity</b><span class="right">active</span></div>
+      <div class="p-b">
+        <div class="ent">
+          <div class="mono-lg">JJ</div>
+          <div>
+            <h1 class="ent-name" id="nm">Julian Joseph</h1>
+            <div class="ent-role" data-rise style="--d:760ms">Detection Engineering &middot; Security Operations</div>
+            <div class="ent-meta" data-rise style="--d:840ms">
+              Washington, D.C. metro area<br>
+              SecOps &middot; detection engineering &middot; security architecture
+            </div>
+            <div class="ent-links" data-rise style="--d:910ms">
+              <a class="tag act" href="https://linkedin.com/in/julianjoseph1">linkedin.com/in/julianjoseph1</a>
+              <span class="tag todo">add email</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-f">M.Eng Cybersecurity, University of Maryland &middot; 2026</div>
+    </section>
+
+    <section class="p c2">
+      <div class="p-h"><b>Tenure</b></div>
+      <div class="p-b"><div class="kpi">
+        <div><div class="kpi-k">Security operations</div>
+        <div class="kpi-v"><span data-count="42">0</span><span class="u">mo</span></div></div>
+        <div class="kpi-n">Microland &rarr; Nurix</div>
+      </div></div>
+    </section>
+
+    <section class="p c2">
+      <div class="p-h"><b>Estate</b></div>
+      <div class="p-b"><div class="kpi">
+        <div><div class="kpi-k">Systems under SIEM</div>
+        <div class="kpi-v"><span data-count="50">0</span><span class="u">+</span></div></div>
+        <div class="kpi-n">multi-tenant, Microland</div>
+      </div></div>
+    </section>
+
+    <section class="p c2">
+      <div class="p-h"><b>Triage</b></div>
+      <div class="p-b"><div class="kpi">
+        <div><div class="kpi-k">Time reduced</div>
+        <div class="kpi-v ok"><span data-count="30">0</span><span class="u">%</span></div></div>
+        <div class="kpi-n">automated enrichment</div>
+      </div></div>
+    </section>
+
+    <section class="p c2">
+      <div class="p-h"><b>Status</b></div>
+      <div class="p-b"><div class="kpi">
+        <div><div class="kpi-k">Availability</div>
+        <div class="kpi-v sm ok">Immediate</div></div>
+        <div class="kpi-n">on-site &middot; hybrid &middot; remote</div>
+      </div></div>
+    </section>
+  </div>
+
+  <!-- ============ 02 ABOUT ============ -->
+  <div class="secbar"><b>02 &middot; About</b><span class="ln"></span><span class="ct">analyst summary</span></div>
+  <div class="grid" id="about">
+    <section class="p c8">
+      <div class="p-h"><b>Analyst summary</b><span class="right">first person</span></div>
+      <div class="p-b sum">
+        <p>I work the defensive side of security operations. Three and a half years of it: two years
+        running SIEM and endpoint security across <strong>50+ managed systems</strong> at Microland in
+        Bengaluru, then consulting on security operations at <strong>Nurix Therapeutics</strong> while
+        finishing a master&rsquo;s at Maryland.</p>
+        <p>The part of the pipeline I care about is the unglamorous middle &mdash; where a log becomes an
+        alert and an alert becomes a decision. Most of what a SIEM emits is noise, and tuning it down is
+        slower and less celebrated than shipping a new rule, but it is the whole difference between a SOC
+        that investigates and a SOC that has learned to ignore itself. At Nurix that has meant rewriting
+        KQL detections for fidelity rather than coverage, and designing Conditional Access policies around
+        how people actually authenticate instead of how the documentation assumes they do.</p>
+        <p>I spend time on the offensive side too &mdash; ROP chains, RSA key weaknesses, C2 framework
+        behavior &mdash; not to pivot into red teaming, but because you cannot write credible detection for
+        a technique you have never executed. Every exploit lab I have finished has ended in a detection
+        rule.</p>
+        <p>I am looking for full-time work in <strong>security operations, detection engineering, or
+        security architecture</strong>.</p>
+      </div>
+    </section>
+    <section class="p c4">
+      <div class="p-h"><b>Profile fields</b></div>
+      <div class="p-b flush"><div id="facts"></div></div>
+    </section>
+  </div>
+
+  <!-- ============ 03 EXPERIENCE ============ -->
+  <div class="secbar"><b>03 &middot; Experience</b><span class="ln"></span><span class="ct">2 assignments &middot; 42 months</span></div>
+  <div class="grid" id="experience">
+    <section class="p c7">
+      <div class="p-h"><b>Assignment timeline</b><span class="right">2022 &ndash; present</span></div>
+      <div class="gt" id="gt">
+        <div class="gt-scroll"><div class="gt-in">
+          <div class="gt-r">
+            <div class="gt-k">Employment</div>
+            <div class="gt-t">
+              <div class="gt-b w1" style="left:8.3%;width:41.7%;--d:0ms">Microland &middot; SIEM &amp; Endpoint</div>
+              <div class="gt-b w2" style="left:66.7%;width:25%;--d:150ms">Nurix &middot; SecOps</div>
+            </div>
+          </div>
+          <div class="gt-r">
+            <div class="gt-k">Education</div>
+            <div class="gt-t">
+              <div class="gt-b ed" style="left:51.7%;width:35%;--d:300ms">M.Eng Cybersecurity, UMD</div>
+            </div>
+          </div>
+          <div class="gt-ax">
+            <div></div>
+            <div class="gt-tk">
+              <span style="left:0%">2022</span><span style="left:20%">2023</span>
+              <span style="left:40%">2024</span><span style="left:60%">2025</span>
+              <span style="left:80%">2026</span>
+            </div>
+          </div>
+        </div></div>
+      </div>
+      <div class="p-f">Solid = employed &middot; hatched = graduate study &middot; the 2024 break is the M.Eng</div>
+    </section>
+
+    <section class="p c5">
+      <div class="p-h"><b>Cumulative experience</b><span class="right">months, by quarter</span></div>
+      <div class="p-b">
+        <svg class="chart" id="areachart" viewBox="0 0 420 178" role="img"
+             aria-label="Cumulative months of security operations experience rising to 42 months by Q3 2026, with a plateau at 26 months during graduate study.">
+          <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6092C0" stop-opacity=".38"/>
+            <stop offset="100%" stop-color="#6092C0" stop-opacity="0"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
+      <div class="p-f">Plateau = no professional accrual during full-time study</div>
+    </section>
+
+    <section class="p c6">
+      <div class="p-h"><b>Nurix Therapeutics</b><span class="right">current</span></div>
+      <div class="p-b">
+        <div class="role-m">
+          <b>Security Engineering Co-op &middot; Security Operations</b><br>
+          San Francisco, CA &middot; Remote &nbsp;|&nbsp; May 2025 &ndash; Present &nbsp;|&nbsp; 15 mo
+        </div>
+        <ul class="bl">
+          <li>Administer and tune Microsoft Sentinel, developing KQL detection rules that raised alert
+          fidelity and cut false positives across the environment.</li>
+          <li>Lead incident response for phishing and identity-based threats, correlating Sentinel,
+          Defender for Endpoint, and Entra ID signals to establish scope, containment, and root cause.</li>
+          <li>Coordinated cross-functional communications during a major multi-department phishing
+          incident, interfacing with IT, HR, and leadership to drive containment decisions.</li>
+          <li>Design Conditional Access policies in Entra ID, analyzing authentication patterns and
+          setting sign-in frequency controls to enforce least-privilege sessions without breaking
+          operations.</li>
+          <li>Run security architecture reviews on new systems and integrations, identifying control gaps
+          and recommending remediation against organizational risk tolerance.</li>
+          <li>Prioritize vulnerability findings by severity and business impact, tracking remediation
+          against MTTD, MTTR, and critical-vulnerability reduction targets.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="p c6">
+      <div class="p-h"><b>Microland Limited</b><span class="right">2022 &ndash; 2024</span></div>
+      <div class="p-b">
+        <div class="role-m">
+          <b>Senior Administrator &middot; SIEM &amp; Endpoint Security</b><br>
+          Bengaluru, India &nbsp;|&nbsp; June 2022 &ndash; July 2024 &nbsp;|&nbsp; 26 mo
+        </div>
+        <ul class="bl">
+          <li>Ran Sentinel at scale across 50+ managed systems: workspace configuration, data connector
+          onboarding, ingestion monitoring, and alert triage.</li>
+          <li>Built and maintained analytics rules and workbooks that standardized detection across client
+          tenants and reduced mean time to detection.</li>
+          <li>Operated Defender for Endpoint for investigation and response, including device isolation,
+          live response sessions, and indicator management.</li>
+          <li>Maintained Entra ID identity governance: Conditional Access, user lifecycle operations, and
+          privileged identity reviews.</li>
+          <li>Administered SentinelOne EDR alongside the Microsoft stack &mdash; triage, hunting queries,
+          and policy tuning.</li>
+          <li>Awarded Microland MiCert for contributions to managed security service delivery.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 04 PROJECTS ============ -->
+  <div class="secbar"><b>04 &middot; Projects</b><span class="ln"></span><span class="ct">query the register &middot; expand a row for detail</span></div>
+  <div class="grid" id="projects">
+    <section class="p c12">
+      <div class="p-h"><b>Query</b><span class="right" id="qstat">6 of 6 rows</span></div>
+      <div class="p-b">
+        <div class="qctl">
+          <div>
+            <label for="q-dom">Domain</label>
+            <select id="q-dom">
+              <option value="">all domains</option>
+              <option value="det">Detection engineering</option>
+              <option value="app">Application security</option>
+              <option value="cloud">Cloud &amp; infrastructure</option>
+              <option value="off">Offensive &amp; cryptanalysis</option>
+            </select>
+          </div>
+          <div>
+            <label for="q-sev">Impact</label>
+            <select id="q-sev">
+              <option value="">any</option>
+              <option value="crit">Critical</option>
+              <option value="high">High</option>
+              <option value="med">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label for="q-txt">Search &mdash; title, tooling, technique ID</label>
+            <input id="q-txt" type="text" placeholder="Sentinel &nbsp; T1071 &nbsp; STRIDE &nbsp; Ghidra">
+          </div>
+          <div class="qbtns">
+            <button class="btn" id="q-run">Run</button>
+            <button class="btn ghost" id="q-reset">Reset</button>
+          </div>
+        </div>
+        <pre class="q" id="qout"></pre>
+      </div>
+    </section>
+
+    <section class="p c9">
+      <div class="p-h"><b>Project register</b><span class="right">structured as case files</span></div>
+      <div class="p-b flush">
+        <div class="tb-h reg-h">
+          <span></span><span>Ref</span><span>Project</span><span>Domain</span><span>Period</span><span>Impact</span>
+        </div>
+        <div id="reg"></div>
+      </div>
+      <div class="p-f" id="regfoot">6 rows &middot; 5 more available on request</div>
+    </section>
+
+    <section class="p c3">
+      <div class="p-h"><b>By domain</b><span class="right">n=11</span></div>
+      <div class="p-b">
+        <div class="donut-wrap">
+          <svg class="donut" id="donut" viewBox="0 0 132 132" role="img"
+               aria-label="Eleven projects by domain: detection engineering 3, cloud and infrastructure 3, application security 2, offensive and cryptanalysis 2, network security 1."></svg>
+          <div class="lg" id="dlegend"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="p c12">
+      <div class="p-h"><b>Deliverables</b><span class="right">artifacts produced, most recent first</span></div>
+      <div class="p-b flush">
+        <div class="tb-h" style="grid-template-columns:88px 52px 1fr 130px">
+          <span>Period</span><span>Type</span><span>Artifact</span><span>Source</span>
+        </div>
+        <div id="deliv"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 05 EDUCATION ============ -->
+  <div class="secbar"><b>05 &middot; Education</b><span class="ln"></span><span class="ct">degrees &middot; certifications</span></div>
+  <div class="grid" id="education">
+    <section class="p c7">
+      <div class="p-h"><b>Degrees &amp; coursework</b><span class="right">2018 &ndash; 2026</span></div>
+      <div class="p-b flush">
+        <div class="tb-h" style="grid-template-columns:1fr 92px 92px">
+          <span>Qualification</span><span>Result</span><span>Period</span>
+        </div>
+        <div id="degrees"></div>
+      </div>
+    </section>
+    <section class="p c5">
+      <div class="p-h"><b>Certifications &amp; recognition</b><span class="right">status as-is</span></div>
+      <div class="p-b flush">
+        <div class="tb-h" style="grid-template-columns:1fr 104px">
+          <span>Credential</span><span>Status</span>
+        </div>
+        <div id="certs"></div>
+      </div>
+      <div class="p-f">1 awarded &middot; 2 in progress</div>
+    </section>
+  </div>
+
+  <!-- ============ 06 SKILLS ============ -->
+  <div class="secbar"><b>06 &middot; Skills</b><span class="ln"></span><span class="ct">hands-on, not aspirational</span></div>
+  <div class="grid" id="skills">
+    <section class="p c5">
+      <div class="p-h"><b>Tooling by domain</b><span class="right">distinct tools</span></div>
+      <div class="p-b" id="bars"></div>
+      <div class="p-f">Counts reflect the inventory at right, not proficiency</div>
+    </section>
+    <section class="p c7">
+      <div class="p-h"><b>Inventory</b><span class="right">8 domains</span></div>
+      <div class="p-b sk" id="skgrid"></div>
+    </section>
+  </div>
+
+  <!-- ============ 07 CONTACT ============ -->
+  <div class="secbar"><b>07 &middot; Contact</b><span class="ln"></span><span class="ct">open a ticket</span></div>
+  <div class="grid" id="contact">
+    <section class="p c7">
+      <div class="p-h"><b>New ticket</b><span class="right">replies within 24h</span></div>
+      <div class="p-b">
+        <div class="frm">
+          <div><label for="f-name">Name</label><input id="f-name" type="text" autocomplete="name"></div>
+          <div><label for="f-org">Organization</label><input id="f-org" type="text" autocomplete="organization"></div>
+          <div class="w"><label for="f-mail">Email</label><input id="f-mail" type="email" autocomplete="email"></div>
+          <div class="w"><label for="f-msg">Description</label><textarea id="f-msg"></textarea></div>
+          <div class="w">
+            <button class="btn" id="send">Submit</button>
+            <div class="msg" id="msg">Prototype form &mdash; nothing is sent or stored yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="p c5">
+      <div class="p-h"><b>Assignee</b></div>
+      <div class="p-b flush"><div id="assignee"></div></div>
+      <div class="p-f">Open to on-site, hybrid, or remote</div>
+    </section>
+  </div>
+
+  <div class="ft">
+    <span>BUILD 2026.08.03</span>
+    <span>NO TRACKERS &middot; NO ANALYTICS</span>
+    <span>ALL FIGURES DERIVED FROM CV</span>
+  </div>
+</main>
+
+<script>
+"use strict";
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var NS='http://www.w3.org/2000/svg';
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+function svgEl(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+function row(cols,html){var r=el('div','tb-r',html);r.style.gridTemplateColumns=cols;return r;}
+
+/* ---------------- clock ---------------- */
+var clk=document.getElementById('clock');
+function tick(){clk.textContent=new Date().toISOString().slice(11,19);}
+tick();setInterval(tick,1000);
+
+/* ---------------- profile fields ---------------- */
+[['Location','Washington, D.C. metro area'],
+ ['Availability','Immediate'],
+ ['Seeking','SecOps &middot; Detection engineering &middot; Security architecture'],
+ ['Tenure','42 months security operations'],
+ ['Education','M.Eng Cybersecurity, UMD'],
+ ['Core stack','Sentinel &middot; KQL &middot; Defender for Endpoint &middot; Entra ID'],
+ ['Setting','On-site, hybrid, or remote']
+].forEach(function(f){
+  document.getElementById('facts').appendChild(
+    row('92px 1fr','<span class="id">'+f[0].toUpperCase()+'</span><span>'+f[1]+'</span>'));
+});
+
+/* ---------------- cumulative experience (real: months accrued by quarter) ---------------- */
+var SERIES=[['2022Q1',0],['2022Q2',1],['2022Q3',4],['2022Q4',7],['2023Q1',10],['2023Q2',13],
+            ['2023Q3',16],['2023Q4',19],['2024Q1',22],['2024Q2',25],['2024Q3',26],['2024Q4',26],
+            ['2025Q1',26],['2025Q2',28],['2025Q3',31],['2025Q4',34],['2026Q1',37],['2026Q2',40],
+            ['2026Q3',42]];
+(function(){
+  var svg=document.getElementById('areachart');
+  var W=420,H=178,L=34,R=12,T=16,B=30;
+  var pw=W-L-R,ph=H-T-B,ymax=45,n=SERIES.length;
+  function X(i){return L+(i/(n-1))*pw;}
+  function Y(v){return T+ph-(v/ymax)*ph;}
+
+  [0,15,30,45].forEach(function(v){
+    svg.appendChild(svgEl('line',{'class':'gl',x1:L,y1:Y(v),x2:W-R,y2:Y(v)}));
+    var t=svgEl('text',{'class':'ax',x:L-8,y:Y(v)+4,'text-anchor':'end'});
+    t.textContent=v;svg.appendChild(t);
+  });
+  SERIES.forEach(function(p,i){
+    if(p[0].slice(4)==='Q1'){
+      var t=svgEl('text',{'class':'ax',x:X(i),y:H-8,'text-anchor':'middle'});
+      t.textContent=p[0].slice(0,4);svg.appendChild(t);
+    }
+  });
+  var d='';
+  SERIES.forEach(function(p,i){d+=(i?' L':'M')+X(i).toFixed(1)+','+Y(p[1]).toFixed(1);});
+  svg.appendChild(svgEl('path',{'class':'area',
+    d:d+' L'+X(n-1).toFixed(1)+','+Y(0)+' L'+X(0).toFixed(1)+','+Y(0)+' Z'}));
+  svg.appendChild(svgEl('path',{'class':'ln',d:d}));
+
+  svg.appendChild(svgEl('line',{'class':'adash',x1:X(10),y1:Y(26)-5,x2:X(12),y2:Y(26)-5}));
+  var a1=svgEl('text',{'class':'anno',x:X(11),y:Y(26)-9,'text-anchor':'middle'});
+  a1.textContent='M.Eng · no accrual';svg.appendChild(a1);
+  svg.appendChild(svgEl('circle',{'class':'mk',cx:X(n-1),cy:Y(42),r:3.2}));
+  var a2=svgEl('text',{'class':'anno',x:X(n-1)-5,y:Y(42)-8,'text-anchor':'end'});
+  a2.textContent='42 mo';svg.appendChild(a2);
+})();
+
+/* ---------------- project register ---------------- */
+var HUE={det:'var(--s1)',app:'var(--s2)',cloud:'var(--s3)',off:'var(--s5)',net:'var(--s6)'};
+var SEVN={crit:'Critical',high:'High',med:'Medium',low:'Low'};
+var PROJECTS=[
+ {ref:'PRJ-693-04',sev:'crit',dk:'det',dom:'Detection eng.',per:'2026 Q1&ndash;Q2',
+  t:'Behavioral detection of four C2 families, without signatures',
+  tech:['T1071.001','T1071.004','T1102','T1573','T1568.002'],
+  tools:'Zeek &middot; Suricata &middot; RITA &middot; KQL &middot; Sentinel',
+  problem:'Signature-based detection fails against modern C2 because the payload changes and the infrastructure rotates. What does not change easily is behavior: how often a beacon calls home, how much entropy its DNS queries carry, and what its TLS handshake looks like.',
+  arch:'Detection strategies built per family. Cobalt Strike via JA3/JA3S TLS fingerprinting and beacon jitter analysis. DNS tunneling via Shannon entropy thresholds of 4.0 to 4.2, tested against iodine and dnscat2 behavior. APT29 HAMMERTOSS via social-media DGA and steganographic payload staging in public repositories. HAFNIUM ProxyLogon via webshell C2 patterns.',
+  hard:'Produced KQL-based Sentinel detection logic for each family, mapped to MITRE ATT&amp;CK behavioral signatures, with tooling coverage across RITA, Zeek, and Suricata, plus a fully speaker-noted deck for handoff.',
+  next:'The logic was authored against documented behavior, not live emulation. The honest next step is standing up a Cobalt Strike or Sliver range and measuring false positive rate against real background traffic before any of it reaches a production tenant.'},
+
+ {ref:'PRJ-680-01',sev:'high',dk:'app',dom:'Application sec.',per:'2025 Q3&ndash;Q4',
+  t:'A Go e-commerce platform built security-first through five phases',
+  tech:['T1190','T1550.004','T1552.001','T1499'],
+  tools:'Go &middot; Fiber v2 &middot; GORM &middot; Docker &middot; STRIDE',
+  problem:'Most applications get a security review after they work. This one was specified, threat-modeled, designed, and only then built, to test whether front-loading security produces a materially different architecture.',
+  arch:'Full-stack MVC in Go with Fiber v2, GORM, SQLite, containerized in Docker. Five phases: security requirements specification with STRIDE and misuse cases, security design specification with data flow, ER diagrams, and a traceability matrix, then build, deployment, and user guide.',
+  hard:'Defense in depth throughout: bcrypt hashing, JWT sessions with HttpOnly, Secure, SameSite=Strict cookies, RBAC separating customer and admin, CSRF validation on every state-changing request, AES-256-GCM for PII at rest, TLS 1.2+ with HSTS and CSP, a multi-layer input validation pipeline including MIME and magic-number file checks kept deliberately separate from controller logic, and four-category structured JSON audit logging designed for ELK or Splunk ingestion.',
+  next:'STRIDE covered all six categories and five misuse cases traced cleanly to controls, but nothing was validated by an independent tester. A threat model I wrote, verified against an application I wrote, is a closed loop. The next iteration gets an outside adversary.'},
+
+ {ref:'PRJ-AUT-03',sev:'high',dk:'det',dom:'Detection eng.',per:'2025 Q1',
+  t:'Cutting phishing triage by 30% with enrichment, not headcount',
+  tech:['T1566','T1204.002'],
+  tools:'Python &middot; VirusTotal API &middot; IP reputation &middot; LLM',
+  problem:'Analyst toil in phishing triage is mostly indicator lookup: pasting hashes, domains, and IPs into four consoles and reading the results. That work is deterministic, which means it should not be manual.',
+  arch:'Python pipeline pulling VirusTotal and IP reputation APIs to auto-classify phishing indicators, with LLM prompt logic layered on to prioritize alerts and generate contextual descriptions for the analyst.',
+  hard:'Reduced triage time by 30% in a simulated SOC environment. Deliberately mirrored real SOC workflow rather than optimizing a benchmark, so output lands where an analyst already looks.',
+  next:'The LLM prioritization step is the weak link: it is persuasive whether or not it is correct, and I did not measure how often it ranked a true positive below a false one. Any production version needs the model to cite the indicator that drove its ranking so an analyst can overrule it.'},
+
+ {ref:'PRJ-EKS-02',sev:'med',dk:'cloud',dom:'Cloud &amp; infra',per:'2025 Q4',
+  t:'Making a distributed EKS system explain itself',
+  tech:['T1609','T1611','T1613'],
+  tools:'AWS EKS &middot; Kubernetes RBAC &middot; IRSA &middot; OpenTelemetry',
+  problem:'Containerized microservices generate enormous telemetry and almost no security visibility. Infrastructure metrics tell you a pod restarted; they do not tell you why a service started talking to something it never talked to before.',
+  arch:'Distributed microservices on AWS EKS with least privilege enforced through Kubernetes RBAC and IAM Roles for Service Accounts, plus OpenTelemetry pipelines and centralized logging for end-to-end tracing.',
+  hard:'Bridged infrastructure telemetry to application-layer monitoring, so anomalous service behavior became investigable rather than merely observable.',
+  next:'There is no runtime sensor. RBAC and IRSA reduce blast radius, but a container escape would be invisible. Falco or an equivalent belongs in this stack.'},
+
+ {ref:'PRJ-PUR-01',sev:'med',dk:'det',dom:'Detection eng.',per:'2024 Q4',
+  t:'Purple team: turning pentest findings into detection rules',
+  tech:['T1210','T1078','T1098'],
+  tools:'MITRE ATT&amp;CK &middot; correlation rules',
+  problem:'Penetration test reports usually end at the finding. The finding is the least useful part; the useful part is what telemetry the attack generated and whether anything was watching for it.',
+  arch:'Simulated multi-stage enterprise attack scenarios spanning credential access, lateral movement, and persistence, then reconstructed full attack timelines by correlating identity, endpoint, and network telemetry.',
+  hard:'Translated every finding into detection engineering output: MITRE ATT&amp;CK-aligned correlation rules closing the specific blind spots the simulation exposed, with actionable remediation recommendations.',
+  next:'The simulation followed one attack path, and detection built against a single path overfits to it. Running three variants of the same objective would show which rules generalize and which only catch my own tradecraft.'},
+
+ {ref:'PRJ-REV-01',sev:'low',dk:'off',dom:'Offensive &amp; crypto',per:'2025 Q1',
+  t:'Reading exploits closely enough to detect them',
+  tech:['T1068','T1203','T1055'],
+  tools:'Ghidra &middot; GDB &middot; pwndbg &middot; ROP',
+  problem:'You cannot write credible behavioral detection for memory-corruption exploitation if you have never built the exploit. The detection engineer who has only read about ROP will write a rule against what they imagine it looks like.',
+  arch:'ELF binary analysis in Ghidra, GDB, and pwndbg to locate vulnerabilities and construct ROP chains for control-flow hijacking, with kernel privilege escalation simulated in controlled Linux environments via prepare_kernel_cred and commit_creds.',
+  hard:'Studied PLT/GOT mechanics and how lazy binding enables GOT overwrite, then examined how ASLR, NX, and stack canaries interact with each technique. Generated behavioral signatures from the resulting exploit patterns for IDS rule development.',
+  next:'Signatures were derived from lab binaries with known-good ground truth. Real telemetry is dirtier, and I have not measured these against production endpoint data.'}
+];
+var reg=document.getElementById('reg');
+PROJECTS.forEach(function(p,i){
+  var r=el('div','reg-row');
+  var b=el('button','reg-r');
+  b.setAttribute('aria-expanded','false');
+  b.innerHTML='<span class="reg-x">&#9656;</span>'+
+    '<span class="id">'+p.ref+'</span>'+
+    '<span class="nm">'+p.t+'</span>'+
+    '<span class="sub" style="color:'+HUE[p.dk]+'">'+p.dom+'</span>'+
+    '<span class="num">'+p.per+'</span>'+
+    '<span class="sv '+p.sev+'"><i></i>'+SEVN[p.sev]+'</span>';
+  var d=el('div','reg-d');
+  d.innerHTML='<div class="reg-in">'+
+    '<div><div class="fk">Problem</div><div class="fv">'+p.problem+'</div></div>'+
+    '<div><div class="fk">Architecture</div><div class="fv">'+p.arch+'</div></div>'+
+    '<div><div class="fk">What I hardened</div><div class="fv">'+p.hard+'</div></div>'+
+    '<div><div class="fk">What I would change</div><div class="fv">'+p.next+'</div></div>'+
+    '<div class="tq">'+p.tech.map(function(x){return '<span class="tag pv" data-pivot="'+x+'">'+x+'</span>';}).join('')+
+    '<span class="tag" style="color:var(--muted)">'+p.tools+'</span></div></div>';
+  b.addEventListener('click',function(){
+    b.setAttribute('aria-expanded',r.classList.toggle('open')?'true':'false');
+  });
+  r.dataset.dom=p.dk;r.dataset.sev=p.sev;
+  r.dataset.blob=(p.t+' '+p.dom+' '+p.tools+' '+p.tech.join(' ')+' '+
+    p.problem+' '+p.arch+' '+p.hard).replace(/&[a-z]+;/g,' ').toLowerCase();
+  r.appendChild(b);r.appendChild(d);reg.appendChild(r);
+  if(i===0){r.classList.add('open');b.setAttribute('aria-expanded','true');}
+});
+
+/* ---------------- donut: 11 projects by domain ---------------- */
+var DOM=[['Detection engineering',3,'var(--s1)','det'],['Cloud &amp; infrastructure',3,'var(--s3)','cloud'],
+         ['Application security',2,'var(--s2)','app'],['Offensive &amp; cryptanalysis',2,'var(--s5)','off'],
+         ['Network security',1,'var(--s6)','net']];
+(function(){
+  var svg=document.getElementById('donut'),r=52,C=2*Math.PI*r,off=0;
+  DOM.forEach(function(d){
+    var len=(d[1]/11)*C;
+    var seg=svgEl('circle',{cx:66,cy:66,r:r,stroke:d[2],
+      'stroke-dasharray':len.toFixed(2)+' '+(C-len).toFixed(2),
+      'stroke-dashoffset':(-off).toFixed(2),transform:'rotate(-90 66 66)'});
+    seg.dataset.dom=d[3];svg.appendChild(seg);
+    off+=len;
+  });
+  var t1=svgEl('text',{'class':'dlab',x:66,y:68});t1.textContent='11';svg.appendChild(t1);
+  var t2=svgEl('text',{'class':'dsub',x:66,y:80});t2.textContent='PROJECTS';svg.appendChild(t2);
+  var lg=document.getElementById('dlegend');
+  DOM.forEach(function(d){
+    var li=el('div','lg-i','<i class="lg-sw" style="background:'+d[2]+'"></i>'+
+      '<span>'+d[0]+'</span><span class="lg-v">'+d[1]+'</span>');
+    li.dataset.dom=d[3];lg.appendChild(li);
+  });
+})();
+
+/* ---------------- deliverables ---------------- */
+var TC={KQL:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
+[['2026 Q2','KQL','Sentinel detection logic &mdash; Cobalt Strike, DNS tunneling, HAMMERTOSS, ProxyLogon','ENPM693'],
+ ['2026 Q2','CODE','rsa_breaker.py &mdash; Pollard-Brent factorization and shared-prime GCD recovery','ENPM693'],
+ ['2026 Q1','DOC','Cryptographic construction analysis &mdash; MAC vs. signature, MAC-then-Encrypt','ENPM693'],
+ ['2026 Q1','LAB','Multi-zone stateful iptables ruleset with probe-validated evidence','ENPM693'],
+ ['2025 Q4','DOC','Security Requirements Specification &mdash; STRIDE model, five misuse cases','ENPM680'],
+ ['2025 Q4','DOC','Security Design Specification &mdash; data flow, ER diagrams, traceability matrix','ENPM680'],
+ ['2025 Q4','LAB','Hardened EKS environment &mdash; RBAC, IRSA, OpenTelemetry pipelines','UMD'],
+ ['2025 Q1','CODE','Alert enrichment pipeline &mdash; VirusTotal and IP reputation auto-classification','UMD'],
+ ['2024 Q4','KQL','ATT&amp;CK-aligned correlation rules derived from attack simulation','UMD'],
+ ['2024 Q4','DOC','AWS security assessment &mdash; IAM, security groups, S3, encryption findings','UMD']
+].forEach(function(d){
+  document.getElementById('deliv').appendChild(row('88px 52px 1fr 130px',
+    '<span class="num">'+d[0]+'</span>'+
+    '<span class="id" style="color:'+TC[d[1]]+'">'+d[1]+'</span>'+
+    '<span>'+d[2]+'</span><span class="id">'+d[3]+'</span>'));
+});
+
+/* ---------------- education ---------------- */
+[['Master of Engineering, Cybersecurity','University of Maryland &middot; A. James Clark School of Engineering','GPA 4.00','2024&ndash;2026'],
+ ['Bachelor of Technology, Computer Engineering','Sardar Vallabhbhai National Institute of Technology, Surat','GPA 3.44','2018&ndash;2022'],
+ ['Graduate coursework','Network Security (ENPM693) &middot; Software Security Engineering (ENPM680) &middot; Low-Level Systems &middot; Cryptography &middot; Binary Exploitation &middot; Computer Networks','&mdash;','UMD']
+].forEach(function(d){
+  document.getElementById('degrees').appendChild(row('1fr 92px 92px',
+    '<span><span class="nm">'+d[0]+'</span><br><span class="sub">'+d[1]+'</span></span>'+
+    '<span class="num">'+d[2]+'</span><span class="num">'+d[3]+'</span>'));
+});
+[['Microland MiCert','Awarded for performance in managed security operations','low','Awarded'],
+ ['SC-200 &mdash; Microsoft Security Operations Analyst','Sentinel, Defender XDR, Entra ID threat protection','med','In progress'],
+ ['AZ-500 &mdash; Azure Security Engineer Associate','Identity, platform protection, data and application security','med','In progress']
+].forEach(function(c){
+  document.getElementById('certs').appendChild(row('1fr 104px',
+    '<span><span class="nm">'+c[0]+'</span><br><span class="sub">'+c[1]+'</span></span>'+
+    '<span class="sv '+c[2]+'"><i></i>'+c[3]+'</span>'));
+});
+
+/* ---------------- skills: bars + inventory ---------------- */
+var SK=[
+ ['SIEM &amp; detection','var(--s1)',['Microsoft Sentinel','KQL','Analytics Rules','Workbooks','Data Connectors','SentinelOne','Alert triage','Detection engineering']],
+ ['Network &amp; traffic','var(--s6)',['TCP/IP','DNS','HTTP/S','iptables','Zeek','Suricata','RITA','Wireshark','nmap','JA3/JA3S']],
+ ['Cloud &amp; containers','var(--s3)',['Azure','AWS','EKS','Kubernetes RBAC','IRSA','OpenTelemetry','Docker','AWS WAF','VPC controls']],
+ ['Code','var(--s2)',['Python','KQL','Bash','SQL','Go (Fiber, GORM)','JavaScript','Django','REST APIs']],
+ ['Offensive','var(--s5)',['Ghidra','GDB','pwndbg','ROP construction','Buffer overflow','RSA cryptanalysis','C2 behavior']],
+ ['Identity &amp; access','var(--s4)',['Entra ID','Conditional Access','PIM','Privileged identity review','User lifecycle','Graph API']],
+ ['Endpoint','var(--s1)',['Defender for Endpoint','Microsoft Intune','SentinelOne EDR','Live response','Device isolation']],
+ ['Frameworks','var(--s2)',['MITRE ATT&amp;CK','STRIDE','Misuse case analysis','Architecture review','NIST key guidance']]
+];
+(function(){
+  var bars=document.getElementById('bars'),skg=document.getElementById('skgrid');
+  var mx=Math.max.apply(null,SK.map(function(s){return s[2].length;}));
+  SK.forEach(function(s,i){
+    var b=el('div','hb','<span class="hb-k">'+s[0]+'</span>'+
+      '<span class="hb-t"><i class="hb-f" style="background:'+s[1]+';--d:'+(i*70)+'ms"></i></span>'+
+      '<span class="hb-v">'+s[2].length+'</span>');
+    b.querySelector('.hb-f').dataset.w=(s[2].length/mx*100).toFixed(1)+'%';
+    bars.appendChild(b);
+    skg.appendChild(el('div','sk-g','<h3 style="color:'+s[1]+'">'+s[0]+'</h3>'+
+      '<div class="sk-t">'+s[2].map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>'));
+  });
+})();
+
+/* ---------------- assignee ---------------- */
+[['Name','Julian Joseph'],['Role','Detection Engineering &middot; Security Operations'],
+ ['Location','Washington, D.C. metro'],
+ ['LinkedIn','<a href="https://linkedin.com/in/julianjoseph1">julianjoseph1</a>'],
+ ['Email','<span class="tag todo">add email</span>'],['SLA','24 hours']
+].forEach(function(a){
+  document.getElementById('assignee').appendChild(row('84px 1fr',
+    '<span class="id">'+a[0].toUpperCase()+'</span><span>'+a[1]+'</span>'));
+});
+
+/* ---------------- query engine: drives the register ---------------- */
+var DOMNAME={det:'Detection engineering',app:'Application security',
+  cloud:'Cloud & infrastructure',off:'Offensive & cryptanalysis',net:'Network security'};
+var SEVUP={crit:'Critical',high:'High',med:'Medium',low:'Low'};
+(function(){
+  var selD=document.getElementById('q-dom'),selS=document.getElementById('q-sev'),
+      inT=document.getElementById('q-txt'),out=document.getElementById('qout'),
+      stat=document.getElementById('qstat'),foot=document.getElementById('regfoot'),
+      regEl=document.getElementById('reg');
+  var rows=Array.prototype.slice.call(regEl.querySelectorAll('.reg-row'));
+  var total=rows.length;
+  var empty=el('div','empty','No projects match this query. Broaden the filter or reset.');
+  empty.style.display='none';regEl.appendChild(empty);
+
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function kql(dom,sev,txt,shown){
+    var L=['<span class="kw">ProjectRegister</span>'];
+    if(dom) L.push('<span class="op">|</span> where Domain <span class="op">==</span> <span class="st">"'+esc(DOMNAME[dom])+'"</span>');
+    if(sev) L.push('<span class="op">|</span> where Impact <span class="op">==</span> <span class="st">"'+SEVUP[sev]+'"</span>');
+    if(txt) L.push('<span class="op">|</span> search <span class="st">"'+esc(txt)+'"</span>');
+    L.push('<span class="op">|</span> project Ref, Project, Domain, Period, Impact');
+    L.push('<span class="op">|</span> order by Impact <span class="kw">desc</span>');
+    L.push('<span class="cm">// '+shown+' of '+total+' rows returned</span>');
+    return L.join('\n');
+  }
+  function run(){
+    var t0=(window.performance&&performance.now)?performance.now():0;
+    var dom=selD.value,sev=selS.value,txt=inT.value.trim(),q=txt.toLowerCase(),shown=0;
+    rows.forEach(function(r){
+      var ok=(!dom||r.dataset.dom===dom)&&(!sev||r.dataset.sev===sev)&&
+             (!q||r.dataset.blob.indexOf(q)>-1);
+      r.style.display=ok?'':'none';
+      if(ok)shown++;
+    });
+    empty.style.display=shown?'none':'';
+    var ms=(window.performance&&performance.now)?(performance.now()-t0).toFixed(1):'0.0';
+    out.innerHTML=kql(dom,sev,txt,shown);
+    stat.textContent=shown+' of '+total+' rows';
+    foot.textContent=shown+' of '+total+' rows \u00B7 executed '+
+      new Date().toISOString().slice(11,19)+' UTC \u00B7 '+ms+' ms';
+    /* cross-filter the donut + legend */
+    document.querySelectorAll('#donut circle[data-dom]').forEach(function(c){
+      c.classList.toggle('dim',!!dom&&c.dataset.dom!==dom);
+    });
+    document.querySelectorAll('#dlegend .lg-i').forEach(function(l){
+      l.classList.toggle('dim',!!dom&&l.dataset.dom!==dom);
+    });
+  }
+  selD.addEventListener('change',run);
+  selS.addEventListener('change',run);
+  inT.addEventListener('input',run);
+  document.getElementById('q-run').addEventListener('click',run);
+  document.getElementById('q-reset').addEventListener('click',function(){
+    selD.value='';selS.value='';inT.value='';run();
+  });
+  /* click a technique tag to pivot the query onto it */
+  regEl.addEventListener('click',function(e){
+    var tg=e.target.closest?e.target.closest('.tag.pv'):null;
+    if(!tg)return;
+    inT.value=tg.dataset.pivot;run();
+    document.getElementById('projects').scrollIntoView({block:'start'});
+  });
+  run();
+})();
+
+/* ---------------- boot sequence ---------------- */
+function showAll(){
+  document.querySelectorAll('.p').forEach(function(p){p.classList.add('in');});
+  document.querySelectorAll('.chart').forEach(function(c){c.classList.add('on');});
+  document.getElementById('donut').classList.add('on');
+  document.getElementById('gt').classList.add('on');
+  document.querySelectorAll('.hb-f').forEach(function(f){f.style.width=f.dataset.w;});
+}
+(function(){
+  var nm=document.getElementById('nm'),caret=null;
+  if(nm){
+    var txt=nm.textContent.trim();
+    nm.setAttribute('aria-label',txt);
+    nm.textContent='';
+    var inner=el('span');inner.setAttribute('aria-hidden','true');
+    txt.split('').forEach(function(c,i){
+      var s=el('span','ch');s.style.setProperty('--i',i);
+      s.textContent=(c===' '?'\u00A0':c);inner.appendChild(s);
+    });
+    nm.appendChild(inner);
+    caret=el('i','caret');caret.setAttribute('aria-hidden','true');nm.appendChild(caret);
+  }
+  document.querySelectorAll('.ab-right>*').forEach(function(e,i){
+    e.style.setProperty('--d',(120+i*90)+'ms');
+  });
+  var cr=document.querySelector('.crumb');if(cr)cr.style.setProperty('--d','90ms');
+
+  if(reduce){
+    document.body.classList.add('no-anim','booted');
+    if(nm)nm.classList.add('go');
+    showAll();
+    return;
+  }
+  requestAnimationFrame(function(){
+    document.body.classList.add('booted');
+    setTimeout(function(){if(nm)nm.classList.add('go');},240);
+    var t=240+(nm?nm.querySelectorAll('.ch').length*34:0)+180;
+    setTimeout(function(){if(caret)caret.classList.add('off');},t);
+  });
+})();
+
+/* ---------------- reveal on scroll ---------------- */
+(function(){
+  if(reduce)return;
+  if(!('IntersectionObserver' in window)){showAll();return;}
+  var po=new IntersectionObserver(function(es){
+    es.forEach(function(e,i){
+      if(!e.isIntersecting)return;
+      setTimeout(function(){e.target.classList.add('in');},i*45);
+      po.unobserve(e.target);
+    });
+  },{threshold:.05});
+  document.querySelectorAll('.p').forEach(function(p){po.observe(p);});
+
+  function once(node,fn,th){
+    if(!node)return;
+    var o=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){fn(e.target);o.unobserve(e.target);}});
+    },{threshold:th});
+    o.observe(node);
+  }
+  once(document.getElementById('areachart'),function(n){n.classList.add('on');},.25);
+  once(document.getElementById('donut'),function(n){n.classList.add('on');},.3);
+  once(document.getElementById('gt'),function(n){n.classList.add('on');},.25);
+  once(document.getElementById('bars'),function(n){
+    n.querySelectorAll('.hb-f').forEach(function(f){f.style.width=f.dataset.w;});
+  },.2);
+})();
+
+/* ---------------- KPI count-up ---------------- */
+document.querySelectorAll('[data-count]').forEach(function(e){
+  var target=+e.dataset.count;
+  if(reduce){e.textContent=target;return;}
+  var n=0;
+  function step(){
+    n+=Math.max(1,Math.ceil((target-n)/7));
+    if(n>=target){e.textContent=target;return;}
+    e.textContent=n;requestAnimationFrame(step);
+  }
+  setTimeout(step,900);
+});
+
+/* ---------------- nav active state ---------------- */
+(function(){
+  if(!('IntersectionObserver' in window))return;
+  var links=document.querySelectorAll('.nav a[href^="#"]');
+  var o=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting)return;
+      links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id);});
+    });
+  },{rootMargin:'-12% 0px -78% 0px'});
+  document.querySelectorAll('.grid[id]').forEach(function(g){o.observe(g);});
+})();
+
+/* ---------------- ticket ---------------- */
+var msg=document.getElementById('msg');
+document.getElementById('send').addEventListener('click',function(){
+  var m=document.getElementById('f-mail').value.trim();
+  var b=document.getElementById('f-msg').value.trim();
+  if(!m||m.indexOf('@')===-1){
+    msg.className='msg err';msg.textContent='Add an email address so a reply can reach you.';
+    document.getElementById('f-mail').focus();return;
+  }
+  if(!b){
+    msg.className='msg err';msg.textContent='Add a description. One line is enough.';
+    document.getElementById('f-msg').focus();return;
+  }
+  msg.className='msg ok';
+  msg.textContent='Ticket #'+Math.floor(2000+Math.random()*8000)+
+    ' queued — prototype only, nothing was sent. Reach out on LinkedIn meanwhile.';
+});
+</script>
+</body>
+</html>
