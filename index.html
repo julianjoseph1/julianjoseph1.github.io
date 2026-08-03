@@ -3,12 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Marks the document as scripted before first paint. Every "hidden until
+     animated in" rule is scoped to .js, so if this script never runs — JS
+     off, blocked, or a runtime error anywhere below — the static content
+     (name, contact, summary, both role histories) renders plainly instead
+     of staying at opacity:0. <noscript> only covers the JS-off case; this
+     also covers JS-present-but-broken. -->
+<script>document.documentElement.className+=' js';</script>
 <title>Julian Joseph — Detection Engineering &amp; Security Operations</title>
-<meta name="description" content="Julian Joseph — detection engineering and security operations. Microsoft Sentinel, Defender for Endpoint, Entra ID. 42 months in security operations. M.Eng Cybersecurity, University of Maryland.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Julian Joseph — detection engineering and security operations. Microsoft Sentinel, KQL, Defender for Endpoint, Entra ID. SIEM at scale, incident response, security architecture review. M.Eng Cybersecurity, University of Maryland.">
+<link rel="canonical" href="https://julianjoseph1.github.io/">
+<meta name="theme-color" content="#0E1013">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<!-- Open Graph / Twitter. og.png is 1200x630. -->
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Julian Joseph — SecOps Portfolio">
+<meta property="og:title" content="Julian Joseph — Detection Engineering &amp; Security Operations">
+<meta property="og:description" content="Detection engineering and security operations: Microsoft Sentinel, Defender for Endpoint, Entra ID. M.Eng Cybersecurity, University of Maryland.">
+<meta property="og:url" content="https://julianjoseph1.github.io/">
+<meta property="og:image" content="https://julianjoseph1.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Julian Joseph — Detection Engineering and Security Operations">
+<meta property="profile:first_name" content="Julian">
+<meta property="profile:last_name" content="Joseph">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Julian Joseph — Detection Engineering &amp; Security Operations">
+<meta name="twitter:description" content="Detection engineering and security operations: Microsoft Sentinel, Defender for Endpoint, Entra ID. M.Eng Cybersecurity, University of Maryland.">
+<meta name="twitter:image" content="https://julianjoseph1.github.io/og.png">
+
+<!-- Self-hosted fonts. Sans is a 400-700 variable file; Mono ships three static weights. -->
+<link rel="preload" href="fonts/plex-sans-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/plex-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('fonts/plex-sans-latin-var.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;
+  src:url('fonts/plex-mono-latin-400.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
+  src:url('fonts/plex-mono-latin-500.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;
+  src:url('fonts/plex-mono-latin-600.woff2') format('woff2')}
 /* ============================================================
    TOKENS — observability-console convention: neutral near-black
    surfaces, one interactive azure, a 6-hue categorical series
@@ -50,7 +88,12 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+/* No overflow-x guard on <body>: it would turn body into a scrollport and
+   stop the mobile nav's position:sticky from working. Overflow is contained
+   per-element instead — min-width:0 on grid children, .brk on long strings,
+   and dedicated scrollers on the gantt and the KQL block. */
 body{background:var(--bg);color:var(--text);font-family:var(--sans);
   font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}
@@ -62,9 +105,10 @@ h1,h2,h3{margin:0;font-weight:600}
 .appbar{position:fixed;top:0;left:0;right:0;height:var(--bar);z-index:70;
   display:flex;align-items:center;gap:14px;padding:0 12px;
   background:var(--surface-2);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:var(--text-hi)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;
+  color:var(--text-hi);white-space:nowrap;flex:none}
 .brand svg{width:17px;height:17px;color:var(--accent)}
-.crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
 .crumb b{color:var(--text);font-weight:500}
 .ab-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .pill{display:flex;align-items:center;gap:7px;height:28px;padding:0 11px;
@@ -110,7 +154,7 @@ h1,h2,h3{margin:0;font-weight:600}
 .secbar{display:flex;align-items:center;gap:12px;margin:22px 0 10px;
   font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--muted)}
-.secbar b{color:var(--text-hi);font-weight:600;letter-spacing:.12em}
+.secbar b{color:var(--text-hi);font-weight:600;letter-spacing:.12em;white-space:nowrap}
 .secbar .ln{flex:1;height:1px;background:var(--line)}
 .secbar .ct{color:var(--muted-2);letter-spacing:.06em;text-transform:none}
 
@@ -122,8 +166,9 @@ h1,h2,h3{margin:0;font-weight:600}
 .c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
 
 .p{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;
-  opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
-.p.in{opacity:1;transform:none}
+  min-width:0}
+.js .p{opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+.js .p.in{opacity:1;transform:none}
 .p-h{display:flex;align-items:center;gap:9px;min-height:36px;padding:0 12px;flex:none;
   background:var(--surface-2);border-bottom:1px solid var(--line);
   font-family:var(--mono);font-size:11.5px;letter-spacing:.11em;
@@ -134,6 +179,7 @@ h1,h2,h3{margin:0;font-weight:600}
 .p-b.flush{padding:0}
 .p-f{border-top:1px solid var(--line);padding:8px 12px;font-family:var(--mono);
   font-size:11px;color:var(--muted-2);letter-spacing:.04em}
+.w-below{display:none}
 
 /* ============ entity card ============ */
 .ent{display:flex;gap:11px;align-items:flex-start}
@@ -196,7 +242,8 @@ h1,h2,h3{margin:0;font-weight:600}
 .hb-v{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
 
 .donut-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.donut{width:154px;height:154px;transform:rotate(-24deg) scale(.93);opacity:0;
+.donut{width:154px;height:154px}
+.js .donut{transform:rotate(-24deg) scale(.93);opacity:0;
   transition:transform .7s cubic-bezier(.25,.8,.25,1),opacity .6s ease}
 .donut.on{transform:none;opacity:1}
 .donut circle{fill:none;stroke-width:15}
@@ -217,9 +264,13 @@ h1,h2,h3{margin:0;font-weight:600}
   color:var(--muted);text-align:right}
 .gt-t{position:relative;height:26px;background:var(--surface-2);border:1px solid var(--line)}
 .gt-b{position:absolute;top:-1px;height:26px;display:flex;align-items:center;padding:0 9px;
-  font-family:var(--mono);font-size:11.5px;white-space:nowrap;overflow:hidden;box-sizing:border-box;
-  clip-path:inset(0 100% 0 0);transition:clip-path .8s cubic-bezier(.25,.8,.25,1);
-  transition-delay:var(--d,0ms)}
+  font-family:var(--mono);font-size:11.5px;white-space:nowrap;overflow:hidden;box-sizing:border-box}
+/* Bars are static markup but JS supplies left/width from CV arithmetic, so
+   without JS they would all stack at left:0 and overprint each other. Hide
+   them rather than render a garbled timeline. */
+.gt-b{display:none}
+.js .gt-b{display:flex;clip-path:inset(0 100% 0 0);
+  transition:clip-path .8s cubic-bezier(.25,.8,.25,1);transition-delay:var(--d,0ms)}
 .gt.on .gt-b{clip-path:inset(0 0 0 0)}
 .gt-b.w1{background:rgba(96,146,192,.26);border:1px solid var(--s2);color:var(--text-hi)}
 .gt-b.w2{background:rgba(84,179,153,.26);border:1px solid var(--s1);color:var(--text-hi)}
@@ -230,8 +281,14 @@ h1,h2,h3{margin:0;font-weight:600}
 .gt-tk span{position:absolute;top:2px;transform:translateX(-50%);
   font-family:var(--mono);font-size:10.5px;color:var(--muted-2)}
 
-/* ============ tables ============ */
-.tb-h,.tb-r{display:grid;align-items:center;gap:12px;padding:0 12px}
+/* ============ tables ============
+   Column tracks come in as a --cols custom property rather than an inline
+   grid-template-columns, so a media query can restate them for narrow
+   screens without fighting inline-style specificity. */
+.tb-h,.tb-r{display:grid;grid-template-columns:var(--cols,1fr);
+  align-items:center;gap:12px;padding:0 12px;min-width:0}
+.tb-h>*,.tb-r>*{min-width:0}
+.brk{overflow-wrap:anywhere}
 .tb-h{min-height:32px;background:var(--surface-2);border-bottom:1px solid var(--line);
   font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted)}
@@ -337,12 +394,22 @@ textarea{resize:vertical;min-height:84px}
 .ft{display:flex;gap:22px;flex-wrap:wrap;padding:16px 2px 38px;
   font-family:var(--mono);font-size:11px;color:var(--muted-2);letter-spacing:.04em}
 
-/* ============ boot motion ============ */
-[data-rise]{opacity:0;transform:translateY(7px)}
+/* ============ no-script notice ============
+   Shown only when the .js marker is absent. The register, charts and
+   inventory are rendered from data at load, so they are empty without
+   scripting — say so, and give a contact path that needs no scripting. */
+.nojs{display:none}
+html:not(.js) .nojs{display:block;margin-bottom:10px;
+  background:var(--surface);border:1px solid var(--line-2);border-left:2px solid var(--high);
+  padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--text)}
+
+/* ============ boot motion ============
+   Every initial-hidden state is .js-scoped — see the head comment. */
+.js [data-rise]{opacity:0;transform:translateY(7px)}
 .booted [data-rise]{opacity:1;transform:none;
   transition:opacity .5s ease,transform .5s cubic-bezier(.25,.8,.25,1);
   transition-delay:var(--d,0ms)}
-.ab-right>*,.crumb{opacity:0}
+.js .ab-right>*,.js .crumb{opacity:0}
 .booted .ab-right>*,.booted .crumb{opacity:1;transition:opacity .35s ease;
   transition-delay:var(--d,0ms)}
 .no-anim .ent-name .ch,.no-anim [data-rise],.no-anim .ab-right>*,.no-anim .crumb{
@@ -355,13 +422,24 @@ textarea{resize:vertical;min-height:84px}
 .no-anim .chart .ln{stroke-dashoffset:0}
 .no-anim .chart .area,.no-anim .chart .mk,.no-anim .chart .anno,.no-anim .chart .adash{opacity:1}
 
-/* ============ responsive ============ */
+/* ============ responsive ============
+   1380 mosaic -> halves · 900 register sheds columns · 760 nav becomes a
+   sticky horizontal strip · 620 fixed table tracks collapse to a stacked
+   card · 430 app bar sheds everything but identity. */
 @media(max-width:1380px){
   .c2{grid-column:span 3}
   .c3,.c4,.c5{grid-column:span 6}
   .c7,.c8,.c9{grid-column:span 12}
+  /* the skills inventory is no longer beside the bars from here down */
+  .w-side{display:none}
+  .w-below{display:inline}
 }
+/* App bar sheds items in order of value as width runs out. Measured against
+   the widest content: brand 150 + crumb 300 + ghost pill 200 + scope pill 120
+   + clock 110 + badge 28 + gaps 84 needs ~1000px, so the crumb goes first. */
+@media(max-width:1000px){ .crumb{display:none} }
 @media(max-width:900px){
+  .pill.ghost{display:none}
   .c2,.c3,.c4,.c5,.c6{grid-column:span 6}
   .reg-h,.reg-r{grid-template-columns:26px 1fr 104px}
   .reg-h>*:nth-child(2),.reg-r>*:nth-child(2),
@@ -374,17 +452,71 @@ textarea{resize:vertical;min-height:84px}
 }
 @media(max-width:760px){
   :root{--nav:0px}
-  .nav{position:static;width:auto;flex-direction:row;overflow-x:auto;
-    border-right:0;border-bottom:1px solid var(--line);padding:0;margin-top:var(--bar)}
+  /* sticky, not static: on a long phone page the section nav has to stay
+     reachable, and it pins directly under the fixed app bar. */
+  .nav{position:sticky;top:var(--bar);bottom:auto;width:auto;flex-direction:row;overflow-x:auto;
+    overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+    border-right:0;border-bottom:1px solid var(--line);padding:0;margin-top:var(--bar);
+    scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
   .nav-h,.nav-foot,.nav a .n{display:none}
   .nav{width:auto!important;box-shadow:none!important;transition:none}
   .nav .lb{opacity:1}
-  .nav a{border-left:0;border-bottom:2px solid transparent;padding:9px 11px;white-space:nowrap}
+  .nav a{border-left:0;border-bottom:2px solid transparent;padding:0 13px;
+    min-height:44px;white-space:nowrap}          /* 44px = touch target */
   .nav a.on{border-left:0;border-bottom-color:var(--accent)}
-  .shell{margin-top:0}
-  .crumb,.pill.ghost{display:none}
+  .shell{margin-top:0;padding:12px}
   .c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9{grid-column:span 12}
   .q{font-size:12px}
+  /* anchors must clear the app bar AND the pinned nav strip */
+  .grid{scroll-margin-top:calc(var(--bar) + 52px)}
+  .qctl{grid-template-columns:1fr;gap:10px}
+  .qbtns .btn{flex:1;min-height:44px}
+  /* 16px stops iOS Safari zooming the viewport on field focus */
+  select,input,textarea{font-size:16px;padding:11px}
+  .gt-in{min-width:420px}
+  .gt-r,.gt-ax{grid-template-columns:68px 1fr;gap:9px}
+}
+@media(max-width:620px){
+  .shell{padding:10px}
+  .secbar{margin:18px 0 9px;gap:9px;font-size:11.5px}
+  /* Fixed pixel tracks cannot survive a 375px viewport, so the three wide
+     data tables become stacked cards: the primary cell takes its own line
+     and the metadata cells wrap beneath it as a mono strip. Their column
+     headers stop meaning anything once stacked, so they go — but .reg-h
+     also carries .tb-h and must survive, hence the :not(). */
+  #deliv>.tb-r,#degrees>.tb-r,#certs>.tb-r{display:flex;flex-wrap:wrap;gap:3px 12px}
+  #deliv>.tb-r>.wide,#degrees>.tb-r>.wide,#certs>.tb-r>.wide{flex:1 1 100%;order:-1}
+  .tb-h:not(.reg-h){display:none}
+  /* label/value rows stay a grid so the labels keep a common edge */
+  #facts>.tb-r,#assignee>.tb-r{--cols:78px 1fr;gap:10px}
+  /* register: drop the fixed impact track, let the pill size itself */
+  .reg-h,.reg-r{grid-template-columns:22px 1fr auto;gap:10px}
+  .reg-r{min-height:48px}
+  .reg-in{padding:14px 14px 18px;gap:14px}
+  .ent{gap:10px}
+  .mono-lg{width:50px;height:50px;font-size:19px}
+  .ent-name{font-size:27px}
+  .kpi-v{font-size:32px}
+  .hb{grid-template-columns:98px 1fr 26px;gap:9px;font-size:12px}
+  .hb-k{font-size:11.5px}
+  .sum p{font-size:14.5px}
+  .ft{gap:6px 18px;padding-bottom:28px}
+}
+@media(max-width:430px){
+  .brand{font-size:0;gap:0}                     /* keep the shield, drop the wordmark */
+  .brand svg{width:19px;height:19px}
+  .pill{display:none}
+  .live{font-size:11px}
+  .ent-name{font-size:24px}
+  .secbar .ct{display:none}   /* supplementary caption; the numbered title carries it */
+  .reg-in{padding:12px 12px 16px}
+  .lg-i{grid-template-columns:11px 1fr 20px;gap:8px;font-size:12.5px}
+}
+/* coarse pointers get real touch targets regardless of viewport width */
+@media(hover:none)and(pointer:coarse){
+  .btn{min-height:44px}
+  .reg-r{min-height:48px}
 }
 </style>
 <noscript><style>
@@ -395,6 +527,44 @@ textarea{resize:vertical;min-height:84px}
 .chart .area,.chart .mk,.chart .anno,.chart .adash{opacity:1!important}
 .reg-d{max-height:none!important}
 </style></noscript>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Julian Joseph",
+  "jobTitle": "Detection Engineering & Security Operations",
+  "url": "https://julianjoseph1.github.io/",
+  "email": "mailto:julianjo@umd.edu",
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "Washington, D.C. metro area",
+    "addressCountry": "US"
+  },
+  "alumniOf": [
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "University of Maryland, A. James Clark School of Engineering"
+    },
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "Sardar Vallabhbhai National Institute of Technology, Surat"
+    }
+  ],
+  "knowsAbout": [
+    "Detection engineering",
+    "Security operations",
+    "Microsoft Sentinel",
+    "KQL",
+    "Microsoft Defender for Endpoint",
+    "Microsoft Entra ID",
+    "Incident response",
+    "Security architecture review",
+    "MITRE ATT&CK"
+  ],
+  "sameAs": ["https://linkedin.com/in/julianjoseph1"]
+}
+</script>
 </head>
 <body>
 
@@ -406,7 +576,7 @@ textarea{resize:vertical;min-height:84px}
   <div class="crumb">workspace <b>julian-joseph</b> &nbsp;/&nbsp; <b>candidate-profile</b></div>
   <div class="ab-right">
     <div class="pill ghost">Time range: 2018 &ndash; present</div>
-    <div class="pill">42 mo. in scope</div>
+    <div class="pill" id="scopepill">&mdash;</div>
     <div class="live"><i class="led"></i><span id="clock">--:--:--</span> UTC</div>
     <div class="mono-badge">JJ</div>
   </div>
@@ -447,6 +617,15 @@ textarea{resize:vertical;min-height:84px}
 
 <main class="shell">
 
+  <div class="nojs">
+    JavaScript is off, so the project register, charts and tool inventory are
+    not populated &mdash; those panels read from data at load. The summary and
+    both role histories below are complete.
+    Direct contact: <a href="mailto:julianjo@umd.edu">julianjo@umd.edu</a>
+    &middot; <a href="mailto:julianjoseph31@gmail.com">julianjoseph31@gmail.com</a>
+    &middot; <a href="https://linkedin.com/in/julianjoseph1">linkedin.com/in/julianjoseph1</a>
+  </div>
+
   <!-- ============ 01 INDEX ============ -->
   <div class="secbar"><b>01 &middot; Entity profile</b><span class="ln"></span><span class="ct">candidate summary</span></div>
   <div class="grid" id="index">
@@ -463,8 +642,8 @@ textarea{resize:vertical;min-height:84px}
               SecOps &middot; detection engineering &middot; security architecture
             </div>
             <div class="ent-links" data-rise style="--d:910ms">
+              <a class="tag act" href="mailto:julianjo@umd.edu">julianjo@umd.edu</a>
               <a class="tag act" href="https://linkedin.com/in/julianjoseph1">linkedin.com/in/julianjoseph1</a>
-              <span class="tag todo">add email</span>
             </div>
           </div>
         </div>
@@ -476,7 +655,7 @@ textarea{resize:vertical;min-height:84px}
       <div class="p-h"><b>Tenure</b></div>
       <div class="p-b"><div class="kpi">
         <div><div class="kpi-k">Security operations</div>
-        <div class="kpi-v"><span data-count="42">0</span><span class="u">mo</span></div></div>
+        <div class="kpi-v"><span id="kpi-tenure" data-count="0">&mdash;</span><span class="u">mo</span></div></div>
         <div class="kpi-n">Microland &rarr; Nurix</div>
       </div></div>
     </section>
@@ -485,7 +664,7 @@ textarea{resize:vertical;min-height:84px}
       <div class="p-h"><b>Estate</b></div>
       <div class="p-b"><div class="kpi">
         <div><div class="kpi-k">Systems under SIEM</div>
-        <div class="kpi-v"><span data-count="50">0</span><span class="u">+</span></div></div>
+        <div class="kpi-v"><span id="kpi-estate" data-count="0">&mdash;</span><span class="u">+</span></div></div>
         <div class="kpi-n">multi-tenant, Microland</div>
       </div></div>
     </section>
@@ -494,7 +673,7 @@ textarea{resize:vertical;min-height:84px}
       <div class="p-h"><b>Triage</b></div>
       <div class="p-b"><div class="kpi">
         <div><div class="kpi-k">Time reduced</div>
-        <div class="kpi-v ok"><span data-count="30">0</span><span class="u">%</span></div></div>
+        <div class="kpi-v ok"><span id="kpi-triage" data-count="0">&mdash;</span><span class="u">%</span></div></div>
         <div class="kpi-n">automated enrichment</div>
       </div></div>
     </section>
@@ -515,7 +694,7 @@ textarea{resize:vertical;min-height:84px}
     <section class="p c8">
       <div class="p-h"><b>Analyst summary</b><span class="right">first person</span></div>
       <div class="p-b sum">
-        <p>I work the defensive side of security operations. Three and a half years of it: two years
+        <p>I work the defensive side of security operations. Three years of it: two years
         running SIEM and endpoint security across <strong>50+ managed systems</strong> at Microland in
         Bengaluru, then consulting on security operations at <strong>Nurix Therapeutics</strong> while
         finishing a master&rsquo;s at Maryland.</p>
@@ -540,32 +719,28 @@ textarea{resize:vertical;min-height:84px}
   </div>
 
   <!-- ============ 03 EXPERIENCE ============ -->
-  <div class="secbar"><b>03 &middot; Experience</b><span class="ln"></span><span class="ct">2 assignments &middot; 42 months</span></div>
+  <div class="secbar"><b>03 &middot; Experience</b><span class="ln"></span><span class="ct" id="expct"></span></div>
   <div class="grid" id="experience">
     <section class="p c7">
-      <div class="p-h"><b>Assignment timeline</b><span class="right">2022 &ndash; present</span></div>
+      <div class="p-h"><b>Assignment timeline</b><span class="right" id="gt-range"></span></div>
       <div class="gt" id="gt">
         <div class="gt-scroll"><div class="gt-in">
           <div class="gt-r">
             <div class="gt-k">Employment</div>
             <div class="gt-t">
-              <div class="gt-b w1" style="left:8.3%;width:41.7%;--d:0ms">Microland &middot; SIEM &amp; Endpoint</div>
-              <div class="gt-b w2" style="left:66.7%;width:25%;--d:150ms">Nurix &middot; SecOps</div>
+              <div class="gt-b w1" id="gt-microland" style="--d:0ms">Microland &middot; SIEM &amp; Endpoint</div>
+              <div class="gt-b w2" id="gt-nurix" style="--d:150ms">Nurix &middot; SecOps</div>
             </div>
           </div>
           <div class="gt-r">
             <div class="gt-k">Education</div>
             <div class="gt-t">
-              <div class="gt-b ed" style="left:51.7%;width:35%;--d:300ms">M.Eng Cybersecurity, UMD</div>
+              <div class="gt-b ed" id="gt-study" style="--d:300ms">M.Eng Cybersecurity, UMD</div>
             </div>
           </div>
           <div class="gt-ax">
             <div></div>
-            <div class="gt-tk">
-              <span style="left:0%">2022</span><span style="left:20%">2023</span>
-              <span style="left:40%">2024</span><span style="left:60%">2025</span>
-              <span style="left:80%">2026</span>
-            </div>
+            <div class="gt-tk" id="gt-ticks"></div>
           </div>
         </div></div>
       </div>
@@ -575,8 +750,11 @@ textarea{resize:vertical;min-height:84px}
     <section class="p c5">
       <div class="p-h"><b>Cumulative experience</b><span class="right">months, by quarter</span></div>
       <div class="p-b">
+        <!-- The precise figures in this label are written by JS from the
+             computed series; the static text stays figure-free so it cannot
+             go stale or describe an empty chart. -->
         <svg class="chart" id="areachart" viewBox="0 0 420 178" role="img"
-             aria-label="Cumulative months of security operations experience rising to 42 months by Q3 2026, with a plateau at 26 months during graduate study.">
+             aria-label="Cumulative months of security operations experience by quarter, with a plateau during graduate study.">
           <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#6092C0" stop-opacity=".38"/>
             <stop offset="100%" stop-color="#6092C0" stop-opacity="0"/>
@@ -587,25 +765,26 @@ textarea{resize:vertical;min-height:84px}
     </section>
 
     <section class="p c6">
-      <div class="p-h"><b>Nurix Therapeutics</b><span class="right">current</span></div>
+      <div class="p-h"><b>Nurix Therapeutics</b><span class="right" id="nurix-range"></span></div>
       <div class="p-b">
         <div class="role-m">
           <b>Security Engineering Co-op &middot; Security Operations</b><br>
-          San Francisco, CA &middot; Remote &nbsp;|&nbsp; May 2025 &ndash; Present &nbsp;|&nbsp; 15 mo
+          San Francisco, CA &middot; Remote &nbsp;|&nbsp; May 2025 &ndash; May 2026<span id="mo-nurix"></span>
         </div>
+        <!-- Past tense throughout: the engagement closed May 2026 (§8.3). -->
         <ul class="bl">
-          <li>Administer and tune Microsoft Sentinel, developing KQL detection rules that raised alert
+          <li>Administered and tuned Microsoft Sentinel, developing KQL detection rules that raised alert
           fidelity and cut false positives across the environment.</li>
-          <li>Lead incident response for phishing and identity-based threats, correlating Sentinel,
+          <li>Led incident response for phishing and identity-based threats, correlating Sentinel,
           Defender for Endpoint, and Entra ID signals to establish scope, containment, and root cause.</li>
           <li>Coordinated cross-functional communications during a major multi-department phishing
           incident, interfacing with IT, HR, and leadership to drive containment decisions.</li>
-          <li>Design Conditional Access policies in Entra ID, analyzing authentication patterns and
+          <li>Designed Conditional Access policies in Entra ID, analyzing authentication patterns and
           setting sign-in frequency controls to enforce least-privilege sessions without breaking
           operations.</li>
-          <li>Run security architecture reviews on new systems and integrations, identifying control gaps
+          <li>Ran security architecture reviews on new systems and integrations, identifying control gaps
           and recommending remediation against organizational risk tolerance.</li>
-          <li>Prioritize vulnerability findings by severity and business impact, tracking remediation
+          <li>Prioritized vulnerability findings by severity and business impact, tracking remediation
           against MTTD, MTTR, and critical-vulnerability reduction targets.</li>
         </ul>
       </div>
@@ -616,7 +795,7 @@ textarea{resize:vertical;min-height:84px}
       <div class="p-b">
         <div class="role-m">
           <b>Senior Administrator &middot; SIEM &amp; Endpoint Security</b><br>
-          Bengaluru, India &nbsp;|&nbsp; June 2022 &ndash; July 2024 &nbsp;|&nbsp; 26 mo
+          Bengaluru, India &nbsp;|&nbsp; June 2022 &ndash; July 2024<span id="mo-microland"></span>
         </div>
         <ul class="bl">
           <li>Ran Sentinel at scale across 50+ managed systems: workspace configuration, data connector
@@ -639,7 +818,7 @@ textarea{resize:vertical;min-height:84px}
   <div class="secbar"><b>04 &middot; Projects</b><span class="ln"></span><span class="ct">query the register &middot; expand a row for detail</span></div>
   <div class="grid" id="projects">
     <section class="p c12">
-      <div class="p-h"><b>Query</b><span class="right" id="qstat">6 of 6 rows</span></div>
+      <div class="p-h"><b>Query</b><span class="right" id="qstat"></span></div>
       <div class="p-b">
         <div class="qctl">
           <div>
@@ -683,24 +862,24 @@ textarea{resize:vertical;min-height:84px}
         </div>
         <div id="reg"></div>
       </div>
-      <div class="p-f" id="regfoot">6 rows &middot; 5 more available on request</div>
+      <div class="p-f" id="regfoot"></div>
     </section>
 
     <section class="p c3">
-      <div class="p-h"><b>By domain</b><span class="right">n=11</span></div>
+      <div class="p-h"><b>By domain</b><span class="right" id="dcount"></span></div>
       <div class="p-b">
         <div class="donut-wrap">
           <svg class="donut" id="donut" viewBox="0 0 132 132" role="img"
-               aria-label="Eleven projects by domain: detection engineering 3, cloud and infrastructure 3, application security 2, offensive and cryptanalysis 2, network security 1."></svg>
+               aria-label="Projects by domain."></svg>
           <div class="lg" id="dlegend"></div>
         </div>
       </div>
     </section>
 
     <section class="p c12">
-      <div class="p-h"><b>Deliverables</b><span class="right">artifacts produced, most recent first</span></div>
+      <div class="p-h"><b>Deliverables</b><span class="right" id="delivct">artifacts produced, most recent first</span></div>
       <div class="p-b flush">
-        <div class="tb-h" style="grid-template-columns:88px 52px 1fr 130px">
+        <div class="tb-h" style="--cols:88px 52px 1fr 130px">
           <span>Period</span><span>Type</span><span>Artifact</span><span>Source</span>
         </div>
         <div id="deliv"></div>
@@ -714,7 +893,7 @@ textarea{resize:vertical;min-height:84px}
     <section class="p c7">
       <div class="p-h"><b>Degrees &amp; coursework</b><span class="right">2018 &ndash; 2026</span></div>
       <div class="p-b flush">
-        <div class="tb-h" style="grid-template-columns:1fr 92px 92px">
+        <div class="tb-h" style="--cols:1fr 92px 92px">
           <span>Qualification</span><span>Result</span><span>Period</span>
         </div>
         <div id="degrees"></div>
@@ -723,12 +902,12 @@ textarea{resize:vertical;min-height:84px}
     <section class="p c5">
       <div class="p-h"><b>Certifications &amp; recognition</b><span class="right">status as-is</span></div>
       <div class="p-b flush">
-        <div class="tb-h" style="grid-template-columns:1fr 104px">
+        <div class="tb-h" style="--cols:1fr 104px">
           <span>Credential</span><span>Status</span>
         </div>
         <div id="certs"></div>
       </div>
-      <div class="p-f">1 awarded &middot; 2 in progress</div>
+      <div class="p-f" id="certfoot"></div>
     </section>
   </div>
 
@@ -738,10 +917,14 @@ textarea{resize:vertical;min-height:84px}
     <section class="p c5">
       <div class="p-h"><b>Tooling by domain</b><span class="right">distinct tools</span></div>
       <div class="p-b" id="bars"></div>
-      <div class="p-f">Counts reflect the inventory at right, not proficiency</div>
+      <!-- HANDOFF §5.3 requires this disclaimer. "at right" stops being true
+           once the panels stack, so the direction word swaps at that width
+           rather than the claim being left inaccurate on a phone. -->
+      <div class="p-f">Counts reflect the inventory <span class="w-side">at right</span><span
+        class="w-below">below</span>, not proficiency</div>
     </section>
     <section class="p c7">
-      <div class="p-h"><b>Inventory</b><span class="right">8 domains</span></div>
+      <div class="p-h"><b>Inventory</b><span class="right" id="skdom"></span></div>
       <div class="p-b sk" id="skgrid"></div>
     </section>
   </div>
@@ -772,7 +955,7 @@ textarea{resize:vertical;min-height:84px}
   </div>
 
   <div class="ft">
-    <span>BUILD 2026.08.03</span>
+    <span id="buildstamp"></span>
     <span>NO TRACKERS &middot; NO ANALYTICS</span>
     <span>ALL FIGURES DERIVED FROM CV</span>
   </div>
@@ -781,10 +964,99 @@ textarea{resize:vertical;min-height:84px}
 <script>
 "use strict";
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* HANDOFF §6.3 — the boot sequence plays once per tab. A returning visitor
+   lands straight on the content instead of watching the name type itself
+   out again. Wrapped because storage throws in some privacy modes. */
+var seen=false;
+try{seen=window.sessionStorage.getItem('jj.booted')==='1';}catch(e){}
+var instant=reduce||seen;
 var NS='http://www.w3.org/2000/svg';
 function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
 function svgEl(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
-function row(cols,html){var r=el('div','tb-r',html);r.style.gridTemplateColumns=cols;return r;}
+function row(cols,html){var r=el('div','tb-r',html);r.style.setProperty('--cols',cols);return r;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function set(id,txt){var n=document.getElementById(id);if(n)n.textContent=txt;}
+
+/* ============================================================
+   CV — single source of truth. HANDOFF §1: every figure rendered on
+   this page is either a line in this object or documented arithmetic
+   over it. Nothing here is invented. If a figure has no CV line, it
+   is not rendered at all.
+   ============================================================ */
+var CV={
+  email:'julianjo@umd.edu',              /* primary contact */
+  emailAlt:'julianjoseph31@gmail.com',   /* durable alternate */
+  /* employment spans, 'YYYY-MM'; end null = ongoing.
+     Nurix closed at May 2026 graduation (HANDOFF §8.3, confirmed by owner
+     2026-08-03). Both spans are now closed, so total tenure is frozen —
+     set end:null on a new role and every figure resumes accruing. */
+  roles:[
+    {key:'microland',start:'2022-06',end:'2024-07'},
+    {key:'nurix',    start:'2025-05',end:'2026-05'}
+  ],
+  study:{start:'2024-08',end:'2026-05'},  /* M.Eng, UMD */
+  systemsUnderSIEM:50,   /* CV verbatim: "50+ managed systems" */
+  triageReduction:30,    /* CV verbatim: "reduced triage time by 30%",
+                            qualifier "in a simulated SOC environment"
+                            retained wherever the project is described */
+  axis:{start:'2022-01',months:60}   /* chart axis window: Jan 2022 – Dec 2026 */
+};
+
+/* ---------------- month arithmetic (HANDOFF §5.1) ---------------- */
+function mIdx(ym){var p=ym.split('-');return (+p[0])*12+(+p[1])-1;}
+function nowIdx(now){return now.getFullYear()*12+now.getMonth();}
+/* inclusive month count; an ongoing span is counted through the current month */
+function spanMonths(s,now,cut){
+  var a=mIdx(s.start),b=s.end?mIdx(s.end):nowIdx(now);
+  if(cut!=null&&b>cut)b=cut;
+  return b<a?0:b-a+1;
+}
+function monthsOfExperience(now){
+  now=now||new Date();
+  return CV.roles.reduce(function(t,s){return t+spanMonths(s,now);},0);
+}
+/* Last month in which experience accrued: today if any role is ongoing,
+   otherwise the latest role end. */
+function lastAccrual(now){
+  if(CV.roles.some(function(s){return !s.end;}))return nowIdx(now);
+  return CV.roles.reduce(function(m,s){return Math.max(m,mIdx(s.end));},0);
+}
+/* Cumulative months accrued at each quarter end, axis start -> last accrual.
+   Stopping at last accrual rather than "now" matters once every role is
+   closed: otherwise the series grows a flat tail every quarter, and the
+   plateau finder below — which picks the longest flat run — would eventually
+   label that tail "M.Eng · no accrual" instead of the real study gap. */
+function quarterlySeries(now){
+  now=now||new Date();
+  var first=mIdx(CV.axis.start),cur=Math.min(nowIdx(now),lastAccrual(now)),out=[];
+  for(var m=first;m<=cur;m+=3){
+    var qEnd=Math.min(m+2,cur);
+    out.push([Math.floor(m/12)+'Q'+(Math.floor((m%12)/3)+1),
+      CV.roles.reduce(function(t,s){return t+spanMonths(s,now,qEnd);},0)]);
+  }
+  return out;
+}
+/* inclusive year span covering all employment, for panel headers */
+function employmentRange(now){
+  now=now||new Date();
+  var a=Math.min.apply(null,CV.roles.map(function(s){return mIdx(s.start);}));
+  var ongoing=CV.roles.some(function(s){return !s.end;});
+  return Math.floor(a/12)+' – '+
+    (ongoing?'present':Math.floor(lastAccrual(now)/12));
+}
+/* gantt geometry as percentages of the axis window — computed, never hardcoded */
+function barPos(s,now){
+  now=now||new Date();
+  var left=(mIdx(s.start)-mIdx(CV.axis.start))/CV.axis.months*100;
+  return {left:left.toFixed(2)+'%',
+          width:Math.min(spanMonths(s,now)/CV.axis.months*100,100-left).toFixed(2)+'%'};
+}
+function roleMonths(key){
+  var r=CV.roles.filter(function(x){return x.key===key;})[0];
+  return r?spanMonths(r,new Date()):0;
+}
+var MONTHS=monthsOfExperience();
+var SERIES=quarterlySeries();
 
 /* ---------------- clock ---------------- */
 var clk=document.getElementById('clock');
@@ -795,31 +1067,33 @@ tick();setInterval(tick,1000);
 [['Location','Washington, D.C. metro area'],
  ['Availability','Immediate'],
  ['Seeking','SecOps &middot; Detection engineering &middot; Security architecture'],
- ['Tenure','42 months security operations'],
+ ['Tenure',MONTHS+' months security operations'],
+ ['Email','<a href="mailto:'+CV.email+'">'+CV.email+'</a>'],
  ['Education','M.Eng Cybersecurity, UMD'],
  ['Core stack','Sentinel &middot; KQL &middot; Defender for Endpoint &middot; Entra ID'],
  ['Setting','On-site, hybrid, or remote']
 ].forEach(function(f){
   document.getElementById('facts').appendChild(
-    row('92px 1fr','<span class="id">'+f[0].toUpperCase()+'</span><span>'+f[1]+'</span>'));
+    row('92px 1fr','<span class="id">'+f[0].toUpperCase()+'</span><span class="brk">'+f[1]+'</span>'));
 });
 
-/* ---------------- cumulative experience (real: months accrued by quarter) ---------------- */
-var SERIES=[['2022Q1',0],['2022Q2',1],['2022Q3',4],['2022Q4',7],['2023Q1',10],['2023Q2',13],
-            ['2023Q3',16],['2023Q4',19],['2024Q1',22],['2024Q2',25],['2024Q3',26],['2024Q4',26],
-            ['2025Q1',26],['2025Q2',28],['2025Q3',31],['2025Q4',34],['2026Q1',37],['2026Q2',40],
-            ['2026Q3',42]];
+/* ---------------- cumulative experience: months accrued by quarter ----------------
+   Series, y-axis ceiling, gridlines and the plateau annotation are all derived
+   from CV.roles. The plateau is found by scanning for the longest flat run, so
+   the "no accrual" annotation follows the data instead of a hardcoded index. */
 (function(){
   var svg=document.getElementById('areachart');
   var W=420,H=178,L=34,R=12,T=16,B=30;
-  var pw=W-L-R,ph=H-T-B,ymax=45,n=SERIES.length;
+  var pw=W-L-R,ph=H-T-B,n=SERIES.length;
+  var last=SERIES[n-1];
+  var ymax=Math.max(15,Math.ceil((last[1]+3)/15)*15);
   function X(i){return L+(i/(n-1))*pw;}
   function Y(v){return T+ph-(v/ymax)*ph;}
 
-  [0,15,30,45].forEach(function(v){
+  [0,ymax/3,ymax*2/3,ymax].forEach(function(v){
     svg.appendChild(svgEl('line',{'class':'gl',x1:L,y1:Y(v),x2:W-R,y2:Y(v)}));
     var t=svgEl('text',{'class':'ax',x:L-8,y:Y(v)+4,'text-anchor':'end'});
-    t.textContent=v;svg.appendChild(t);
+    t.textContent=Math.round(v);svg.appendChild(t);
   });
   SERIES.forEach(function(p,i){
     if(p[0].slice(4)==='Q1'){
@@ -833,19 +1107,47 @@ var SERIES=[['2022Q1',0],['2022Q2',1],['2022Q3',4],['2022Q4',7],['2023Q1',10],['
     d:d+' L'+X(n-1).toFixed(1)+','+Y(0)+' L'+X(0).toFixed(1)+','+Y(0)+' Z'}));
   svg.appendChild(svgEl('path',{'class':'ln',d:d}));
 
-  svg.appendChild(svgEl('line',{'class':'adash',x1:X(10),y1:Y(26)-5,x2:X(12),y2:Y(26)-5}));
-  var a1=svgEl('text',{'class':'anno',x:X(11),y:Y(26)-9,'text-anchor':'middle'});
-  a1.textContent='M.Eng · no accrual';svg.appendChild(a1);
-  svg.appendChild(svgEl('circle',{'class':'mk',cx:X(n-1),cy:Y(42),r:3.2}));
-  var a2=svgEl('text',{'class':'anno',x:X(n-1)-5,y:Y(42)-8,'text-anchor':'end'});
-  a2.textContent='42 mo';svg.appendChild(a2);
+  /* longest flat run at a non-zero value = the study gap */
+  var pi=-1,pLen=0;
+  for(var i=0;i<n;){
+    var j=i;
+    while(j+1<n&&SERIES[j+1][1]===SERIES[i][1])j++;
+    if(SERIES[i][1]>0&&j-i>pLen){pLen=j-i;pi=i;}
+    i=j+1;
+  }
+  if(pi>-1){
+    var pv=SERIES[pi][1],pEnd=pi+pLen;
+    svg.appendChild(svgEl('line',{'class':'adash',
+      x1:X(pi),y1:Y(pv)-5,x2:X(pEnd),y2:Y(pv)-5}));
+    /* the label is wider than the flat run, so it overhangs into the rising
+       segment; -13 keeps the glyphs clear of the line where they overlap */
+    var a1=svgEl('text',{'class':'anno',x:X((pi+pEnd)/2),y:Y(pv)-13,'text-anchor':'middle'});
+    a1.textContent='M.Eng · no accrual';svg.appendChild(a1);
+  }
+  svg.appendChild(svgEl('circle',{'class':'mk',cx:X(n-1),cy:Y(last[1]),r:3.2}));
+  var a2=svgEl('text',{'class':'anno',x:X(n-1)-5,y:Y(last[1])-8,'text-anchor':'end'});
+  a2.textContent=last[1]+' mo';svg.appendChild(a2);
+
+  svg.setAttribute('aria-label','Cumulative months of security operations experience '+
+    'rising to '+last[1]+' months by '+last[0].slice(0,4)+' '+last[0].slice(4)+
+    (pi>-1?', with a plateau at '+SERIES[pi][1]+' months during graduate study.':'.'));
 })();
 
-/* ---------------- project register ---------------- */
-var HUE={det:'var(--s1)',app:'var(--s2)',cloud:'var(--s3)',off:'var(--s5)',net:'var(--s6)'};
+/* ---------------- project register ----------------
+   One domain table drives colour, legend, KQL and the register's Domain
+   column, so a domain reads the same in every panel (HANDOFF §3). */
+var DOMAINS=[
+ {k:'det',  name:'Detection engineering',      short:'Detection eng.',    colour:'var(--s1)'},
+ {k:'cloud',name:'Cloud & infrastructure',     short:'Cloud & infra',     colour:'var(--s3)'},
+ {k:'app',  name:'Application security',       short:'Application sec.',  colour:'var(--s2)'},
+ {k:'off',  name:'Offensive & cryptanalysis',  short:'Offensive & crypto',colour:'var(--s5)'},
+ {k:'net',  name:'Network security',           short:'Network sec.',      colour:'var(--s6)'}
+];
+var HUE={},DOMNAME={},DOMSHORT={};
+DOMAINS.forEach(function(d){HUE[d.k]=d.colour;DOMNAME[d.k]=d.name;DOMSHORT[d.k]=d.short;});
 var SEVN={crit:'Critical',high:'High',med:'Medium',low:'Low'};
 var PROJECTS=[
- {ref:'PRJ-693-04',sev:'crit',dk:'det',dom:'Detection eng.',per:'2026 Q1&ndash;Q2',
+ {ref:'PRJ-693-04',sev:'crit',dk:'det',per:'2026 Q1&ndash;Q2',
   t:'Behavioral detection of four C2 families, without signatures',
   tech:['T1071.001','T1071.004','T1102','T1573','T1568.002'],
   tools:'Zeek &middot; Suricata &middot; RITA &middot; KQL &middot; Sentinel',
@@ -854,7 +1156,7 @@ var PROJECTS=[
   hard:'Produced KQL-based Sentinel detection logic for each family, mapped to MITRE ATT&amp;CK behavioral signatures, with tooling coverage across RITA, Zeek, and Suricata, plus a fully speaker-noted deck for handoff.',
   next:'The logic was authored against documented behavior, not live emulation. The honest next step is standing up a Cobalt Strike or Sliver range and measuring false positive rate against real background traffic before any of it reaches a production tenant.'},
 
- {ref:'PRJ-680-01',sev:'high',dk:'app',dom:'Application sec.',per:'2025 Q3&ndash;Q4',
+ {ref:'PRJ-680-01',sev:'high',dk:'app',per:'2025 Q3&ndash;Q4',
   t:'A Go e-commerce platform built security-first through five phases',
   tech:['T1190','T1550.004','T1552.001','T1499'],
   tools:'Go &middot; Fiber v2 &middot; GORM &middot; Docker &middot; STRIDE',
@@ -863,7 +1165,7 @@ var PROJECTS=[
   hard:'Defense in depth throughout: bcrypt hashing, JWT sessions with HttpOnly, Secure, SameSite=Strict cookies, RBAC separating customer and admin, CSRF validation on every state-changing request, AES-256-GCM for PII at rest, TLS 1.2+ with HSTS and CSP, a multi-layer input validation pipeline including MIME and magic-number file checks kept deliberately separate from controller logic, and four-category structured JSON audit logging designed for ELK or Splunk ingestion.',
   next:'STRIDE covered all six categories and five misuse cases traced cleanly to controls, but nothing was validated by an independent tester. A threat model I wrote, verified against an application I wrote, is a closed loop. The next iteration gets an outside adversary.'},
 
- {ref:'PRJ-AUT-03',sev:'high',dk:'det',dom:'Detection eng.',per:'2025 Q1',
+ {ref:'PRJ-AUT-03',sev:'high',dk:'det',per:'2025 Q1',
   t:'Cutting phishing triage by 30% with enrichment, not headcount',
   tech:['T1566','T1204.002'],
   tools:'Python &middot; VirusTotal API &middot; IP reputation &middot; LLM',
@@ -872,7 +1174,7 @@ var PROJECTS=[
   hard:'Reduced triage time by 30% in a simulated SOC environment. Deliberately mirrored real SOC workflow rather than optimizing a benchmark, so output lands where an analyst already looks.',
   next:'The LLM prioritization step is the weak link: it is persuasive whether or not it is correct, and I did not measure how often it ranked a true positive below a false one. Any production version needs the model to cite the indicator that drove its ranking so an analyst can overrule it.'},
 
- {ref:'PRJ-EKS-02',sev:'med',dk:'cloud',dom:'Cloud &amp; infra',per:'2025 Q4',
+ {ref:'PRJ-EKS-02',sev:'med',dk:'cloud',per:'2025 Q4',
   t:'Making a distributed EKS system explain itself',
   tech:['T1609','T1611','T1613'],
   tools:'AWS EKS &middot; Kubernetes RBAC &middot; IRSA &middot; OpenTelemetry',
@@ -881,7 +1183,7 @@ var PROJECTS=[
   hard:'Bridged infrastructure telemetry to application-layer monitoring, so anomalous service behavior became investigable rather than merely observable.',
   next:'There is no runtime sensor. RBAC and IRSA reduce blast radius, but a container escape would be invisible. Falco or an equivalent belongs in this stack.'},
 
- {ref:'PRJ-PUR-01',sev:'med',dk:'det',dom:'Detection eng.',per:'2024 Q4',
+ {ref:'PRJ-PUR-01',sev:'med',dk:'det',per:'2024 Q4',
   t:'Purple team: turning pentest findings into detection rules',
   tech:['T1210','T1078','T1098'],
   tools:'MITRE ATT&amp;CK &middot; correlation rules',
@@ -890,24 +1192,32 @@ var PROJECTS=[
   hard:'Translated every finding into detection engineering output: MITRE ATT&amp;CK-aligned correlation rules closing the specific blind spots the simulation exposed, with actionable remediation recommendations.',
   next:'The simulation followed one attack path, and detection built against a single path overfits to it. Running three variants of the same objective would show which rules generalize and which only catch my own tradecraft.'},
 
- {ref:'PRJ-REV-01',sev:'low',dk:'off',dom:'Offensive &amp; crypto',per:'2025 Q1',
+ {ref:'PRJ-REV-01',sev:'low',dk:'off',per:'2025 Q1',
   t:'Reading exploits closely enough to detect them',
   tech:['T1068','T1203','T1055'],
   tools:'Ghidra &middot; GDB &middot; pwndbg &middot; ROP',
   problem:'You cannot write credible behavioral detection for memory-corruption exploitation if you have never built the exploit. The detection engineer who has only read about ROP will write a rule against what they imagine it looks like.',
   arch:'ELF binary analysis in Ghidra, GDB, and pwndbg to locate vulnerabilities and construct ROP chains for control-flow hijacking, with kernel privilege escalation simulated in controlled Linux environments via prepare_kernel_cred and commit_creds.',
   hard:'Studied PLT/GOT mechanics and how lazy binding enables GOT overwrite, then examined how ASLR, NX, and stack canaries interact with each technique. Generated behavioral signatures from the resulting exploit patterns for IDS rule development.',
-  next:'Signatures were derived from lab binaries with known-good ground truth. Real telemetry is dirtier, and I have not measured these against production endpoint data.'}
+  next:'Signatures were derived from lab binaries with known-good ground truth. Real telemetry is dirtier, and I have not measured these against production endpoint data.'},
+
+ /* HANDOFF §8.5 — five further CV projects are not written up yet. They are
+    carried here as domain-only stubs so the donut, the n= count and the
+    register footer all stay derived from PROJECTS.length. No title, period,
+    impact or claim is invented for a stub (§1). Replace a stub with a full
+    entry as each write-up lands and every count follows automatically. */
+ {dk:'cloud'},{dk:'cloud'},{dk:'app'},{dk:'off'},{dk:'net'}
 ];
+var WRITTEN=PROJECTS.filter(function(p){return !!p.problem;});
 var reg=document.getElementById('reg');
-PROJECTS.forEach(function(p,i){
+WRITTEN.forEach(function(p,i){
   var r=el('div','reg-row');
   var b=el('button','reg-r');
   b.setAttribute('aria-expanded','false');
   b.innerHTML='<span class="reg-x">&#9656;</span>'+
     '<span class="id">'+p.ref+'</span>'+
-    '<span class="nm">'+p.t+'</span>'+
-    '<span class="sub" style="color:'+HUE[p.dk]+'">'+p.dom+'</span>'+
+    '<span class="nm wide">'+p.t+'</span>'+
+    '<span class="sub" style="color:'+HUE[p.dk]+'">'+esc(DOMSHORT[p.dk])+'</span>'+
     '<span class="num">'+p.per+'</span>'+
     '<span class="sv '+p.sev+'"><i></i>'+SEVN[p.sev]+'</span>';
   var d=el('div','reg-d');
@@ -922,39 +1232,44 @@ PROJECTS.forEach(function(p,i){
     b.setAttribute('aria-expanded',r.classList.toggle('open')?'true':'false');
   });
   r.dataset.dom=p.dk;r.dataset.sev=p.sev;
-  r.dataset.blob=(p.t+' '+p.dom+' '+p.tools+' '+p.tech.join(' ')+' '+
-    p.problem+' '+p.arch+' '+p.hard).replace(/&[a-z]+;/g,' ').toLowerCase();
+  r.dataset.blob=(p.t+' '+DOMNAME[p.dk]+' '+DOMSHORT[p.dk]+' '+p.ref+' '+p.per+' '+
+    p.tools+' '+p.tech.join(' ')+' '+p.problem+' '+p.arch+' '+p.hard+' '+p.next)
+    .replace(/&[a-z]+;/g,' ').toLowerCase();
   r.appendChild(b);r.appendChild(d);reg.appendChild(r);
   if(i===0){r.classList.add('open');b.setAttribute('aria-expanded','true');}
 });
 
-/* ---------------- donut: 11 projects by domain ---------------- */
-var DOM=[['Detection engineering',3,'var(--s1)','det'],['Cloud &amp; infrastructure',3,'var(--s3)','cloud'],
-         ['Application security',2,'var(--s2)','app'],['Offensive &amp; cryptanalysis',2,'var(--s5)','off'],
-         ['Network security',1,'var(--s6)','net']];
+/* ---------------- donut: projects by domain, tallied from PROJECTS ---------------- */
+var DOM=DOMAINS.map(function(d){
+  return {k:d.k,name:d.name,colour:d.colour,
+    n:PROJECTS.filter(function(p){return p.dk===d.k;}).length};
+}).filter(function(d){return d.n>0;});
 (function(){
-  var svg=document.getElementById('donut'),r=52,C=2*Math.PI*r,off=0;
+  var svg=document.getElementById('donut'),r=52,C=2*Math.PI*r,off=0,total=PROJECTS.length;
   DOM.forEach(function(d){
-    var len=(d[1]/11)*C;
-    var seg=svgEl('circle',{cx:66,cy:66,r:r,stroke:d[2],
+    var len=(d.n/total)*C;
+    var seg=svgEl('circle',{cx:66,cy:66,r:r,stroke:d.colour,
       'stroke-dasharray':len.toFixed(2)+' '+(C-len).toFixed(2),
       'stroke-dashoffset':(-off).toFixed(2),transform:'rotate(-90 66 66)'});
-    seg.dataset.dom=d[3];svg.appendChild(seg);
+    seg.dataset.dom=d.k;svg.appendChild(seg);
     off+=len;
   });
-  var t1=svgEl('text',{'class':'dlab',x:66,y:68});t1.textContent='11';svg.appendChild(t1);
+  var t1=svgEl('text',{'class':'dlab',x:66,y:68});t1.textContent=total;svg.appendChild(t1);
   var t2=svgEl('text',{'class':'dsub',x:66,y:80});t2.textContent='PROJECTS';svg.appendChild(t2);
   var lg=document.getElementById('dlegend');
   DOM.forEach(function(d){
-    var li=el('div','lg-i','<i class="lg-sw" style="background:'+d[2]+'"></i>'+
-      '<span>'+d[0]+'</span><span class="lg-v">'+d[1]+'</span>');
-    li.dataset.dom=d[3];lg.appendChild(li);
+    var li=el('div','lg-i','<i class="lg-sw" style="background:'+d.colour+'"></i>'+
+      '<span>'+esc(d.name)+'</span><span class="lg-v">'+d.n+'</span>');
+    li.dataset.dom=d.k;lg.appendChild(li);
   });
+  svg.setAttribute('aria-label',total+' projects by domain: '+
+    DOM.map(function(d){return d.name.replace(/&/g,'and')+' '+d.n;}).join(', ')+'.');
+  set('dcount','n='+total);
 })();
 
 /* ---------------- deliverables ---------------- */
 var TC={KQL:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
-[['2026 Q2','KQL','Sentinel detection logic &mdash; Cobalt Strike, DNS tunneling, HAMMERTOSS, ProxyLogon','ENPM693'],
+var DELIVERABLES=[['2026 Q2','KQL','Sentinel detection logic &mdash; Cobalt Strike, DNS tunneling, HAMMERTOSS, ProxyLogon','ENPM693'],
  ['2026 Q2','CODE','rsa_breaker.py &mdash; Pollard-Brent factorization and shared-prime GCD recovery','ENPM693'],
  ['2026 Q1','DOC','Cryptographic construction analysis &mdash; MAC vs. signature, MAC-then-Encrypt','ENPM693'],
  ['2026 Q1','LAB','Multi-zone stateful iptables ruleset with probe-validated evidence','ENPM693'],
@@ -964,12 +1279,15 @@ var TC={KQL:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
  ['2025 Q1','CODE','Alert enrichment pipeline &mdash; VirusTotal and IP reputation auto-classification','UMD'],
  ['2024 Q4','KQL','ATT&amp;CK-aligned correlation rules derived from attack simulation','UMD'],
  ['2024 Q4','DOC','AWS security assessment &mdash; IAM, security groups, S3, encryption findings','UMD']
-].forEach(function(d){
+];
+DELIVERABLES.forEach(function(d){
   document.getElementById('deliv').appendChild(row('88px 52px 1fr 130px',
     '<span class="num">'+d[0]+'</span>'+
     '<span class="id" style="color:'+TC[d[1]]+'">'+d[1]+'</span>'+
-    '<span>'+d[2]+'</span><span class="id">'+d[3]+'</span>'));
+    '<span class="wide">'+d[2]+'</span><span class="id">'+d[3]+'</span>'));
 });
+document.getElementById('delivct').innerHTML=
+  DELIVERABLES.length+' artifacts &middot; newest first';
 
 /* ---------------- education ---------------- */
 [['Master of Engineering, Cybersecurity','University of Maryland &middot; A. James Clark School of Engineering','GPA 4.00','2024&ndash;2026'],
@@ -977,17 +1295,26 @@ var TC={KQL:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
  ['Graduate coursework','Network Security (ENPM693) &middot; Software Security Engineering (ENPM680) &middot; Low-Level Systems &middot; Cryptography &middot; Binary Exploitation &middot; Computer Networks','&mdash;','UMD']
 ].forEach(function(d){
   document.getElementById('degrees').appendChild(row('1fr 92px 92px',
-    '<span><span class="nm">'+d[0]+'</span><br><span class="sub">'+d[1]+'</span></span>'+
+    '<span class="wide"><span class="nm">'+d[0]+'</span><br><span class="sub">'+d[1]+'</span></span>'+
     '<span class="num">'+d[2]+'</span><span class="num">'+d[3]+'</span>'));
 });
-[['Microland MiCert','Awarded for performance in managed security operations','low','Awarded'],
+var CERTS=[
+ ['Microland MiCert','Awarded for performance in managed security operations','low','Awarded'],
  ['SC-200 &mdash; Microsoft Security Operations Analyst','Sentinel, Defender XDR, Entra ID threat protection','med','In progress'],
  ['AZ-500 &mdash; Azure Security Engineer Associate','Identity, platform protection, data and application security','med','In progress']
-].forEach(function(c){
+];
+CERTS.forEach(function(c){
   document.getElementById('certs').appendChild(row('1fr 104px',
-    '<span><span class="nm">'+c[0]+'</span><br><span class="sub">'+c[1]+'</span></span>'+
+    '<span class="wide"><span class="nm">'+c[0]+'</span><br><span class="sub">'+c[1]+'</span></span>'+
     '<span class="sv '+c[2]+'"><i></i>'+c[3]+'</span>'));
 });
+(function(){
+  var tally={};
+  CERTS.forEach(function(c){tally[c[3]]=(tally[c[3]]||0)+1;});
+  document.getElementById('certfoot').innerHTML=Object.keys(tally).map(function(k){
+    return tally[k]+' '+k.toLowerCase();
+  }).join(' &middot; ');
+})();
 
 /* ---------------- skills: bars + inventory ---------------- */
 var SK=[
@@ -1012,37 +1339,79 @@ var SK=[
     skg.appendChild(el('div','sk-g','<h3 style="color:'+s[1]+'">'+s[0]+'</h3>'+
       '<div class="sk-t">'+s[2].map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>'));
   });
+  set('skdom',SK.length+' domains');
+})();
+
+/* ---------------- derived labels: no figure below is typed by hand ---------------- */
+(function(){
+  var now=new Date();
+  set('scopepill',MONTHS+' mo. in scope');
+  document.getElementById('kpi-tenure').dataset.count=MONTHS;
+  document.getElementById('kpi-estate').dataset.count=CV.systemsUnderSIEM;
+  document.getElementById('kpi-triage').dataset.count=CV.triageReduction;
+  document.getElementById('expct').innerHTML=
+    CV.roles.length+' assignments &middot; '+MONTHS+' months';
+  /* separator lives inside the span so nothing dangles if JS never runs */
+  document.getElementById('mo-nurix').innerHTML=
+    '&nbsp;|&nbsp; '+roleMonths('nurix')+' mo';
+  document.getElementById('mo-microland').innerHTML=
+    '&nbsp;|&nbsp; '+roleMonths('microland')+' mo';
+  set('gt-range',employmentRange(now));
+  (function(){
+    var r=CV.roles.filter(function(x){return x.key==='nurix';})[0];
+    set('nurix-range',r.start.slice(0,4)+' – '+(r.end?r.end.slice(0,4):'present'));
+  })();
+
+  /* gantt bars + axis ticks, positioned by arithmetic on CV.axis */
+  [['gt-microland',CV.roles[0]],['gt-nurix',CV.roles[1]],['gt-study',CV.study]]
+    .forEach(function(pair){
+      var n=document.getElementById(pair[0]);if(!n)return;
+      var pos=barPos(pair[1],now);
+      n.style.left=pos.left;n.style.width=pos.width;
+    });
+  var ticks=document.getElementById('gt-ticks'),base=mIdx(CV.axis.start);
+  for(var m=0;m<CV.axis.months;m+=12){
+    var s=el('span',null,Math.floor((base+m)/12));
+    s.style.left=(m/CV.axis.months*100).toFixed(2)+'%';
+    ticks.appendChild(s);
+  }
+
+  /* build stamp from the served Last-Modified header, not a typed date */
+  var lm=new Date(document.lastModified);
+  if(!isNaN(lm.getTime())){
+    set('buildstamp','BUILD '+lm.getFullYear()+'.'+
+      ('0'+(lm.getMonth()+1)).slice(-2)+'.'+('0'+lm.getDate()).slice(-2));
+  }
 })();
 
 /* ---------------- assignee ---------------- */
 [['Name','Julian Joseph'],['Role','Detection Engineering &middot; Security Operations'],
  ['Location','Washington, D.C. metro'],
+ ['Email','<a href="mailto:'+CV.email+'">'+CV.email+'</a>'],
+ ['Alt. email','<a href="mailto:'+CV.emailAlt+'">'+CV.emailAlt+'</a>'],
  ['LinkedIn','<a href="https://linkedin.com/in/julianjoseph1">julianjoseph1</a>'],
- ['Email','<span class="tag todo">add email</span>'],['SLA','24 hours']
+ ['SLA','24 hours']
 ].forEach(function(a){
   document.getElementById('assignee').appendChild(row('84px 1fr',
-    '<span class="id">'+a[0].toUpperCase()+'</span><span>'+a[1]+'</span>'));
+    '<span class="id">'+a[0].toUpperCase()+'</span><span class="brk">'+a[1]+'</span>'));
 });
 
 /* ---------------- query engine: drives the register ---------------- */
-var DOMNAME={det:'Detection engineering',app:'Application security',
-  cloud:'Cloud & infrastructure',off:'Offensive & cryptanalysis',net:'Network security'};
-var SEVUP={crit:'Critical',high:'High',med:'Medium',low:'Low'};
 (function(){
   var selD=document.getElementById('q-dom'),selS=document.getElementById('q-sev'),
       inT=document.getElementById('q-txt'),out=document.getElementById('qout'),
       stat=document.getElementById('qstat'),foot=document.getElementById('regfoot'),
       regEl=document.getElementById('reg');
   var rows=Array.prototype.slice.call(regEl.querySelectorAll('.reg-row'));
-  var total=rows.length;
+  var total=rows.length;                          /* rows in the register */
+  var pending=PROJECTS.length-total;              /* CV projects not yet written up */
   var empty=el('div','empty','No projects match this query. Broaden the filter or reset.');
   empty.style.display='none';regEl.appendChild(empty);
 
-  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function kql(dom,sev,txt,shown){
     var L=['<span class="kw">ProjectRegister</span>'];
     if(dom) L.push('<span class="op">|</span> where Domain <span class="op">==</span> <span class="st">"'+esc(DOMNAME[dom])+'"</span>');
-    if(sev) L.push('<span class="op">|</span> where Impact <span class="op">==</span> <span class="st">"'+SEVUP[sev]+'"</span>');
+    if(sev) L.push('<span class="op">|</span> where Impact <span class="op">==</span> <span class="st">"'+SEVN[sev]+'"</span>');
     if(txt) L.push('<span class="op">|</span> search <span class="st">"'+esc(txt)+'"</span>');
     L.push('<span class="op">|</span> project Ref, Project, Domain, Period, Impact');
     L.push('<span class="op">|</span> order by Impact <span class="kw">desc</span>');
@@ -1059,11 +1428,20 @@ var SEVUP={crit:'Critical',high:'High',med:'Medium',low:'Low'};
       if(ok)shown++;
     });
     empty.style.display=shown?'none':'';
-    var ms=(window.performance&&performance.now)?(performance.now()-t0).toFixed(1):'0.0';
+    /* Real measurement (HANDOFF §6.1) — never fabricated. Filtering six rows
+       genuinely lands below the clock's resolution, so report that honestly
+       as a bound rather than printing a flat "0.0" that reads as a stub. */
+    var ms=null;
+    if(window.performance&&performance.now){
+      var dt=performance.now()-t0;
+      ms=dt<0.01?'<0.01':dt.toFixed(2);
+    }
     out.innerHTML=kql(dom,sev,txt,shown);
     stat.textContent=shown+' of '+total+' rows';
-    foot.textContent=shown+' of '+total+' rows \u00B7 executed '+
-      new Date().toISOString().slice(11,19)+' UTC \u00B7 '+ms+' ms';
+    foot.textContent=shown+' of '+total+' rows'+
+      (pending>0?' \u00B7 '+pending+' more available on request':'')+
+      ' \u00B7 executed '+new Date().toISOString().slice(11,19)+' UTC'+
+      (ms!==null?' \u00B7 '+ms+' ms':'');
     /* cross-filter the donut + legend */
     document.querySelectorAll('#donut circle[data-dom]').forEach(function(c){
       c.classList.toggle('dim',!!dom&&c.dataset.dom!==dom);
@@ -1116,12 +1494,13 @@ function showAll(){
   });
   var cr=document.querySelector('.crumb');if(cr)cr.style.setProperty('--d','90ms');
 
-  if(reduce){
+  if(instant){
     document.body.classList.add('no-anim','booted');
     if(nm)nm.classList.add('go');
     showAll();
     return;
   }
+  try{window.sessionStorage.setItem('jj.booted','1');}catch(e){}
   requestAnimationFrame(function(){
     document.body.classList.add('booted');
     setTimeout(function(){if(nm)nm.classList.add('go');},240);
@@ -1132,7 +1511,7 @@ function showAll(){
 
 /* ---------------- reveal on scroll ---------------- */
 (function(){
-  if(reduce)return;
+  if(instant)return;
   if(!('IntersectionObserver' in window)){showAll();return;}
   var po=new IntersectionObserver(function(es){
     es.forEach(function(e,i){
@@ -1161,7 +1540,7 @@ function showAll(){
 /* ---------------- KPI count-up ---------------- */
 document.querySelectorAll('[data-count]').forEach(function(e){
   var target=+e.dataset.count;
-  if(reduce){e.textContent=target;return;}
+  if(instant){e.textContent=target;return;}
   var n=0;
   function step(){
     n+=Math.max(1,Math.ceil((target-n)/7));
