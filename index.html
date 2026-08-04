@@ -10,8 +10,8 @@
      of staying at opacity:0. <noscript> only covers the JS-off case; this
      also covers JS-present-but-broken. -->
 <script>document.documentElement.className+=' js';</script>
-<title>Julian Joseph — Detection Engineering &amp; Security Operations</title>
-<meta name="description" content="Julian Joseph — detection engineering and security operations. Microsoft Sentinel, KQL, Defender for Endpoint, Entra ID. SIEM at scale, incident response, security architecture review. M.Eng Cybersecurity, University of Maryland.">
+<title>Julian Joseph — Security Engineer · Cloud Security &amp; Detection Engineering</title>
+<meta name="description" content="Julian Joseph — security engineer across cloud security, detection engineering, and identity, spanning AWS and Azure. Entra ID, Conditional Access, PIM, Microsoft Sentinel, ArcSight, KQL. M.Eng Cybersecurity, University of Maryland.">
 <link rel="canonical" href="https://julianjoseph1.github.io/">
 <meta name="theme-color" content="#0E1013">
 <meta name="color-scheme" content="dark">
@@ -20,19 +20,19 @@
 
 <!-- Open Graph / Twitter. og.png is 1200x630. -->
 <meta property="og:type" content="profile">
-<meta property="og:site_name" content="Julian Joseph — SecOps Portfolio">
-<meta property="og:title" content="Julian Joseph — Detection Engineering &amp; Security Operations">
-<meta property="og:description" content="Detection engineering and security operations: Microsoft Sentinel, Defender for Endpoint, Entra ID. M.Eng Cybersecurity, University of Maryland.">
+<meta property="og:site_name" content="Julian Joseph — Security Engineering Portfolio">
+<meta property="og:title" content="Julian Joseph — Security Engineer · Cloud Security &amp; Detection Engineering">
+<meta property="og:description" content="Cloud security, detection engineering, and identity across AWS and Azure. Entra ID, Conditional Access, PIM, Sentinel, ArcSight. M.Eng Cybersecurity, University of Maryland.">
 <meta property="og:url" content="https://julianjoseph1.github.io/">
 <meta property="og:image" content="https://julianjoseph1.github.io/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Julian Joseph — Detection Engineering and Security Operations">
+<meta property="og:image:alt" content="Julian Joseph — Security Engineer, Cloud Security and Detection Engineering">
 <meta property="profile:first_name" content="Julian">
 <meta property="profile:last_name" content="Joseph">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Julian Joseph — Detection Engineering &amp; Security Operations">
-<meta name="twitter:description" content="Detection engineering and security operations: Microsoft Sentinel, Defender for Endpoint, Entra ID. M.Eng Cybersecurity, University of Maryland.">
+<meta name="twitter:title" content="Julian Joseph — Security Engineer · Cloud Security &amp; Detection Engineering">
+<meta name="twitter:description" content="Cloud security, detection engineering, and identity across AWS and Azure. Entra ID, Conditional Access, PIM, Sentinel, ArcSight. M.Eng Cybersecurity, University of Maryland.">
 <meta name="twitter:image" content="https://julianjoseph1.github.io/og.png">
 
 <!-- Self-hosted fonts. Sans is a 400-700 variable file; Mono ships three static weights. -->
@@ -308,6 +308,7 @@ h1,h2,h3{margin:0;font-weight:600}
 .sv.high{color:var(--high)}.sv.high i{background:var(--high)}
 .sv.med{color:var(--med)}.sv.med i{background:var(--med)}
 .sv.low{color:var(--low)}.sv.low i{background:var(--low)}
+.sv.info{color:var(--info)}.sv.info i{background:var(--info)}
 
 /* ============ query panel ============ */
 .qctl{display:grid;grid-template-columns:196px 152px 1fr auto;gap:11px;align-items:end;
@@ -349,6 +350,10 @@ select:focus{border-color:var(--accent);outline:none}
 .reg-row.open .reg-d{max-height:1700px}
 .reg-in{padding:16px 18px 20px 42px;border-top:1px solid var(--line);
   display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}
+/* single CV-sourced summary instead of the four-field case file: one column,
+   and the prose gets a measure so it does not run the full panel width */
+.reg-in.one{grid-template-columns:1fr;gap:0}
+.reg-in.one .fv{max-width:82ch}
 .fk{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
   color:var(--accent);margin-bottom:4px}
 .fv{font-size:14px;line-height:1.65;color:var(--text)}
@@ -533,12 +538,13 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Julian Joseph",
-  "jobTitle": "Detection Engineering & Security Operations",
+  "jobTitle": "Security Engineer — Cloud Security & Detection Engineering",
   "url": "https://julianjoseph1.github.io/",
   "email": "mailto:julianjo@umd.edu",
   "address": {
     "@type": "PostalAddress",
-    "addressRegion": "Washington, D.C. metro area",
+    "addressLocality": "Dallas",
+    "addressRegion": "TX",
     "addressCountry": "US"
   },
   "alumniOf": [
@@ -552,14 +558,21 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     }
   ],
   "knowsAbout": [
+    "Cloud security",
     "Detection engineering",
-    "Security operations",
-    "Microsoft Sentinel",
-    "KQL",
-    "Microsoft Defender for Endpoint",
+    "Identity and access management",
     "Microsoft Entra ID",
+    "Conditional Access",
+    "Privileged Identity Management",
+    "AWS IAM",
+    "Amazon EKS",
+    "Microsoft Sentinel",
+    "ArcSight ESM",
+    "KQL",
     "Incident response",
-    "Security architecture review",
+    "Zero Trust architecture",
+    "NIST Cybersecurity Framework",
+    "CIS Benchmarks",
     "MITRE ATT&CK"
   ],
   "sameAs": ["https://linkedin.com/in/julianjoseph1"]
@@ -571,7 +584,7 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
 <div class="appbar">
   <div class="brand">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
-    SecOps Portfolio
+    Security Portfolio
   </div>
   <div class="crumb">workspace <b>julian-joseph</b> &nbsp;/&nbsp; <b>candidate-profile</b></div>
   <div class="ab-right">
@@ -609,7 +622,7 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16"/><path d="M2 6l10 7 10-7"/></svg>
     <span class="lb">Contact</span><span class="n">07</span></a>
   <div class="nav-foot">
-    WASHINGTON, D.C. METRO<br>
+    DALLAS, TEXAS<br>
     AVAILABLE IMMEDIATELY<br>
     <a href="https://linkedin.com/in/julianjoseph1">linkedin</a>
   </div>
@@ -636,10 +649,10 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
           <div class="mono-lg">JJ</div>
           <div>
             <h1 class="ent-name" id="nm">Julian Joseph</h1>
-            <div class="ent-role" data-rise style="--d:760ms">Detection Engineering &middot; Security Operations</div>
+            <div class="ent-role" data-rise style="--d:760ms">Security Engineer &middot; Cloud &amp; Detection</div>
             <div class="ent-meta" data-rise style="--d:840ms">
-              Washington, D.C. metro area<br>
-              SecOps &middot; detection engineering &middot; security architecture
+              Dallas, TX<br>
+              Cloud security &middot; detection engineering &middot; identity
             </div>
             <div class="ent-links" data-rise style="--d:910ms">
               <a class="tag act" href="mailto:julianjo@umd.edu">julianjo@umd.edu</a>
@@ -654,7 +667,7 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     <section class="p c2">
       <div class="p-h"><b>Tenure</b></div>
       <div class="p-b"><div class="kpi">
-        <div><div class="kpi-k">Security operations</div>
+        <div><div class="kpi-k">Security engineering</div>
         <div class="kpi-v"><span id="kpi-tenure" data-count="0">&mdash;</span><span class="u">mo</span></div></div>
         <div class="kpi-n">Microland &rarr; Nurix</div>
       </div></div>
@@ -663,18 +676,18 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     <section class="p c2">
       <div class="p-h"><b>Estate</b></div>
       <div class="p-b"><div class="kpi">
-        <div><div class="kpi-k">Systems under SIEM</div>
+        <div><div class="kpi-k">Endpoints under SIEM</div>
         <div class="kpi-v"><span id="kpi-estate" data-count="0">&mdash;</span><span class="u">+</span></div></div>
-        <div class="kpi-n">multi-tenant, Microland</div>
+        <div class="kpi-n">ArcSight &amp; Sentinel</div>
       </div></div>
     </section>
 
     <section class="p c2">
-      <div class="p-h"><b>Triage</b></div>
+      <div class="p-h"><b>Response</b></div>
       <div class="p-b"><div class="kpi">
-        <div><div class="kpi-k">Time reduced</div>
-        <div class="kpi-v ok"><span id="kpi-triage" data-count="0">&mdash;</span><span class="u">%</span></div></div>
-        <div class="kpi-n">automated enrichment</div>
+        <div><div class="kpi-k">MTTR reduced</div>
+        <div class="kpi-v ok"><span id="kpi-mttr" data-count="0">&mdash;</span><span class="u">%</span></div></div>
+        <div class="kpi-n">300+ incidents, 24/7 SOC</div>
       </div></div>
     </section>
 
@@ -694,22 +707,27 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     <section class="p c8">
       <div class="p-h"><b>Analyst summary</b><span class="right">first person</span></div>
       <div class="p-b sum">
-        <p>I work the defensive side of security operations. Three years of it: two years
-        running SIEM and endpoint security across <strong>50+ managed systems</strong> at Microland in
-        Bengaluru, then consulting on security operations at <strong>Nurix Therapeutics</strong> while
-        finishing a master&rsquo;s at Maryland.</p>
-        <p>The part of the pipeline I care about is the unglamorous middle &mdash; where a log becomes an
-        alert and an alert becomes a decision. Most of what a SIEM emits is noise, and tuning it down is
-        slower and less celebrated than shipping a new rule, but it is the whole difference between a SOC
-        that investigates and a SOC that has learned to ignore itself. At Nurix that has meant rewriting
-        KQL detections for fidelity rather than coverage, and designing Conditional Access policies around
-        how people actually authenticate instead of how the documentation assumes they do.</p>
-        <p>I spend time on the offensive side too &mdash; ROP chains, RSA key weaknesses, C2 framework
-        behavior &mdash; not to pivot into red teaming, but because you cannot write credible detection for
-        a technique you have never executed. Every exploit lab I have finished has ended in a detection
-        rule.</p>
-        <p>I am looking for full-time work in <strong>security operations, detection engineering, or
-        security architecture</strong>.</p>
+        <p>I work the defensive side of security engineering. Three years of it: two years running
+        ArcSight and Sentinel across <strong>5,000+ endpoints</strong> at Microland in Bengaluru, then a
+        year as the primary cloud security advisor at <strong>Nurix Therapeutics</strong>, a public
+        biotech, while finishing a master&rsquo;s at Maryland.</p>
+        <p>Most of the recent work has been identity, because that is where the perimeter actually sits
+        now. Twenty-plus Conditional Access policies across <strong>600+ identities</strong>, Entra ID
+        federated with AWS so one identity governs both clouds, and standing privilege eliminated through
+        just-in-time elevation in PIM. The unglamorous part is that access controls fail by being routed
+        around: a policy strict enough to look good on paper and awkward enough that someone files an
+        exception is worse than no policy. So I design them against how people actually authenticate, then
+        prove the posture with SOX access reviews rather than assuming it.</p>
+        <p>The other half is detection. Most of what a SIEM emits is noise, and tuning it down is slower
+        and less celebrated than shipping a new rule, but it is the whole difference between a SOC that
+        investigates and a SOC that has learned to ignore itself &mdash; which is why I care more about the
+        <strong>25% false-positive reduction</strong> at Nurix than about rule count, and why an
+        ArcSight-to-Sentinel migration with no coverage gap is the Microland work I would defend first.</p>
+        <p>I spend time on the offensive side too &mdash; ROP chains, binary reverse engineering, C2
+        traffic reconstruction &mdash; not to pivot into red teaming, but because you cannot write credible
+        detection for a technique you have never executed.</p>
+        <p>I am looking for full-time work in <strong>cloud security, detection engineering, or security
+        architecture</strong>.</p>
       </div>
     </section>
     <section class="p c4">
@@ -768,24 +786,35 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
       <div class="p-h"><b>Nurix Therapeutics</b><span class="right" id="nurix-range"></span></div>
       <div class="p-b">
         <div class="role-m">
-          <b>Security Engineering Co-op &middot; Security Operations</b><br>
+          <b>Cloud Security Engineer (Co-op)</b><br>
           San Francisco, CA &middot; Remote &nbsp;|&nbsp; May 2025 &ndash; May 2026<span id="mo-nurix"></span>
         </div>
-        <!-- Past tense throughout: the engagement closed May 2026 (§8.3). -->
+        <!-- Bullets are CV-verbatim (Julian_Joseph_CV_Aug_2026.md). Past tense
+             throughout: the engagement closed May 2026. -->
         <ul class="bl">
-          <li>Administered and tuned Microsoft Sentinel, developing KQL detection rules that raised alert
-          fidelity and cut false positives across the environment.</li>
-          <li>Led incident response for phishing and identity-based threats, correlating Sentinel,
-          Defender for Endpoint, and Entra ID signals to establish scope, containment, and root cause.</li>
-          <li>Coordinated cross-functional communications during a major multi-department phishing
-          incident, interfacing with IT, HR, and leadership to drive containment decisions.</li>
-          <li>Designed Conditional Access policies in Entra ID, analyzing authentication patterns and
-          setting sign-in frequency controls to enforce least-privilege sessions without breaking
-          operations.</li>
-          <li>Ran security architecture reviews on new systems and integrations, identifying control gaps
-          and recommending remediation against organizational risk tolerance.</li>
-          <li>Prioritized vulnerability findings by severity and business impact, tracking remediation
-          against MTTD, MTTR, and critical-vulnerability reduction targets.</li>
+          <li>Designed and deployed 20+ Entra ID Conditional Access policies across 600+ identities,
+          enforcing MFA, device compliance, and risk-based access controls.</li>
+          <li>Federated Entra ID with AWS through SSO and configured CloudTrail log ingestion, extending
+          identity governance and securing AWS WorkSpaces access across both cloud environments.</li>
+          <li>Enforced privileged access controls through Just-in-Time activation, MFA at elevation, and
+          compliant device posture using Azure PIM, eliminating standing privilege exposure
+          organization-wide.</li>
+          <li>Conducted SOX ITGC user access reviews using Veza and administered BeyondTrust Privileged
+          Remote Access, enforcing least-privilege certification and controlled privileged sessions across
+          the environment.</li>
+          <li>Led cloud security architecture reviews of AWS and Azure-hosted systems, evaluating IAM
+          configurations and trust boundaries against CIS Benchmarks and NIST CSF, and presented decisions
+          to infrastructure, GRC, and C-suite stakeholders.</li>
+          <li>Tuned Microsoft Sentinel analytics rules and KQL detections across 500+ endpoints, cutting
+          false positives 25% through iterative threshold and allowlist refinement, and automated
+          compliance checks and telemetry ingestion with Python and PowerShell.</li>
+          <li>Led end-to-end response for 2 major security incidents using Red Canary MDR, correlating
+          telemetry across Microsoft Defender for Endpoint and Identity (MDE/MDI) to detect potential
+          breaches and driving each from detection through full containment; codified the response process
+          into a team runbook that reduced recurring incidents.</li>
+          <li>Investigated email-borne threats and ran phishing simulation campaigns across 600+ users with
+          Abnormal Security, Microsoft Defender for Office, and KnowBe4, reviewing SPF, DKIM, and DMARC
+          authentication and tuning policy to strengthen phishing resilience.</li>
         </ul>
       </div>
     </section>
@@ -794,21 +823,33 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
       <div class="p-h"><b>Microland Limited</b><span class="right">2022 &ndash; 2024</span></div>
       <div class="p-b">
         <div class="role-m">
-          <b>Senior Administrator &middot; SIEM &amp; Endpoint Security</b><br>
+          <b>Cybersecurity Administrator, SIEM &amp; Detection</b><br>
           Bengaluru, India &nbsp;|&nbsp; June 2022 &ndash; July 2024<span id="mo-microland"></span>
         </div>
         <ul class="bl">
-          <li>Ran Sentinel at scale across 50+ managed systems: workspace configuration, data connector
-          onboarding, ingestion monitoring, and alert triage.</li>
-          <li>Built and maintained analytics rules and workbooks that standardized detection across client
-          tenants and reduced mean time to detection.</li>
-          <li>Operated Defender for Endpoint for investigation and response, including device isolation,
-          live response sessions, and indicator management.</li>
-          <li>Maintained Entra ID identity governance: Conditional Access, user lifecycle operations, and
-          privileged identity reviews.</li>
-          <li>Administered SentinelOne EDR alongside the Microsoft stack &mdash; triage, hunting queries,
-          and policy tuning.</li>
-          <li>Awarded Microland MiCert for contributions to managed security service delivery.</li>
+          <li>Deployed and operated ArcSight ESM and Microsoft Sentinel across 5,000+ endpoints,
+          engineering detection logic mapped to NIST and CIS Benchmarks; improved incident response time
+          30% and reduced false positives 35% through iterative rule tuning and telemetry
+          normalization.</li>
+          <li>Resolved 300+ incidents across a 24/7 SOC rotation, correlating firewall, IDS, identity, and
+          endpoint telemetry in ArcSight to perform root-cause analysis and cut MTTR 40%.</li>
+          <li>Built Go and Python automation pipelines ingesting cloud API and Azure SQL telemetry,
+          eliminating 80% of manual security operations tasks and improving audit and compliance reporting
+          reliability for GRC stakeholders.</li>
+          <li>Built and maintained 35+ ArcSight SmartConnectors normalizing log ingestion from 100+ assets,
+          sustaining audit-ready coverage and reducing parser failures.</li>
+          <li>Conducted vulnerability assessments across 8,000+ endpoints using Tenable, prioritizing
+          critical CVEs via CVSS scoring and OWASP risk frameworks.</li>
+          <li>Led an ArcSight-to-Sentinel SIEM migration with zero detection-coverage gaps, rebuilding
+          detection content and validating coverage parity across the cutover.</li>
+          <li>Mentored 3 junior analysts on SIEM operations, alert triage, and incident response.</li>
+          <li>Presented post-incident reviews, KQL-driven risk dashboards, and infrastructure uptime
+          metrics to C-suite stakeholders, communicating threat trends and remediation priorities in
+          business terms.</li>
+          <li>Administered BeyondTrust Privileged Remote Access, enforcing least-privilege session controls
+          and access governance for privileged administrative accounts across the managed estate.</li>
+          <li>Analyzed Zscaler Internet Access (ZIA) web-proxy telemetry and authored correlation rules to
+          detect malicious web traffic and policy violations across the enterprise estate.</li>
         </ul>
       </div>
     </section>
@@ -823,27 +864,21 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
         <div class="qctl">
           <div>
             <label for="q-dom">Domain</label>
-            <select id="q-dom">
-              <option value="">all domains</option>
-              <option value="det">Detection engineering</option>
-              <option value="app">Application security</option>
-              <option value="cloud">Cloud &amp; infrastructure</option>
-              <option value="off">Offensive &amp; cryptanalysis</option>
-            </select>
+            <!-- options are generated from DOMAINS so they cannot drift from
+                 the register, the donut or the KQL (HANDOFF §3) -->
+            <select id="q-dom"><option value="">all domains</option></select>
           </div>
           <div>
-            <label for="q-sev">Impact</label>
-            <select id="q-sev">
+            <label for="q-st">Status</label>
+            <select id="q-st">
               <option value="">any</option>
-              <option value="crit">Critical</option>
-              <option value="high">High</option>
-              <option value="med">Medium</option>
-              <option value="low">Low</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="done">Complete</option>
             </select>
           </div>
           <div>
-            <label for="q-txt">Search &mdash; title, tooling, technique ID</label>
-            <input id="q-txt" type="text" placeholder="Sentinel &nbsp; T1071 &nbsp; STRIDE &nbsp; Ghidra">
+            <label for="q-txt">Search &mdash; title, tooling, domain</label>
+            <input id="q-txt" type="text" placeholder="Splunk &nbsp; Entra &nbsp; STRIDE &nbsp; Ghidra">
           </div>
           <div class="qbtns">
             <button class="btn" id="q-run">Run</button>
@@ -855,10 +890,10 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
     </section>
 
     <section class="p c9">
-      <div class="p-h"><b>Project register</b><span class="right">structured as case files</span></div>
+      <div class="p-h"><b>Project register</b><span class="right">expand a row for detail</span></div>
       <div class="p-b flush">
         <div class="tb-h reg-h">
-          <span></span><span>Ref</span><span>Project</span><span>Domain</span><span>Period</span><span>Impact</span>
+          <span></span><span>Ref</span><span>Project</span><span>Domain</span><span>Period</span><span>Status</span>
         </div>
         <div id="reg"></div>
       </div>
@@ -995,10 +1030,17 @@ var CV={
     {key:'nurix',    start:'2025-05',end:'2026-05'}
   ],
   study:{start:'2024-08',end:'2026-05'},  /* M.Eng, UMD */
-  systemsUnderSIEM:50,   /* CV verbatim: "50+ managed systems" */
-  triageReduction:30,    /* CV verbatim: "reduced triage time by 30%",
-                            qualifier "in a simulated SOC environment"
-                            retained wherever the project is described */
+  location:'Dallas, TX',
+  /* Figures below are verbatim from Julian_Joseph_CV_Aug_2026.md. The earlier
+     "50+ managed systems" and "30% triage reduction" are superseded: the CV
+     now states endpoint counts an order of magnitude higher, and the project
+     the 30% came from is no longer on the CV. */
+  endpointsUnderSIEM:5000, /* "ArcSight ESM and Microsoft Sentinel across
+                              5,000+ endpoints" — Microland */
+  mttrReduction:40,        /* "cut MTTR 40%" — Microland, 300+ incidents
+                              across a 24/7 SOC rotation */
+  identitiesGoverned:600,  /* "20+ Conditional Access policies across 600+
+                              identities" — Nurix */
   axis:{start:'2022-01',months:60}   /* chart axis window: Jan 2022 – Dec 2026 */
 };
 
@@ -1064,13 +1106,14 @@ function tick(){clk.textContent=new Date().toISOString().slice(11,19);}
 tick();setInterval(tick,1000);
 
 /* ---------------- profile fields ---------------- */
-[['Location','Washington, D.C. metro area'],
+[['Location',CV.location],
  ['Availability','Immediate'],
- ['Seeking','SecOps &middot; Detection engineering &middot; Security architecture'],
- ['Tenure',MONTHS+' months security operations'],
+ ['Seeking','Cloud security &middot; Detection engineering &middot; Identity'],
+ ['Tenure',MONTHS+' months security engineering'],
  ['Email','<a href="mailto:'+CV.email+'">'+CV.email+'</a>'],
  ['Education','M.Eng Cybersecurity, UMD'],
- ['Core stack','Sentinel &middot; KQL &middot; Defender for Endpoint &middot; Entra ID'],
+ ['Core stack','Entra ID &middot; AWS &middot; Sentinel &middot; ArcSight &middot; KQL &middot; Python'],
+ ['Frameworks','Zero Trust &middot; NIST CSF &middot; CIS Benchmarks'],
  ['Setting','On-site, hybrid, or remote']
 ].forEach(function(f){
   document.getElementById('facts').appendChild(
@@ -1134,106 +1177,93 @@ tick();setInterval(tick,1000);
 })();
 
 /* ---------------- project register ----------------
-   One domain table drives colour, legend, KQL and the register's Domain
-   column, so a domain reads the same in every panel (HANDOFF §3). */
+   Rebuilt from Julian_Joseph_CV_Aug_2026.md. One domain table drives colour,
+   legend, KQL and the register's Domain column, so a domain reads the same in
+   every panel (HANDOFF §3).
+
+   Two deliberate departures from HANDOFF §5.2, both forced by the source:
+
+   1. Detail is a single CV-sourced summary rather than the four-field
+      Problem / Architecture / What I hardened / What I would change case file.
+      The CV states one bullet per project; the old four fields were inferred
+      during design and already flagged as a launch risk (§8.2). Inferring
+      them again would reintroduce exactly that problem, so they stay out
+      until the owner writes them in his own words.
+   2. The third filter is Status, not Impact. The CV assigns no impact rating
+      to any project and §1 forbids inventing one. Status (Ongoing/Complete)
+      is stated by the CV, and §3 already sanctions amber as in-progress. */
 var DOMAINS=[
- {k:'det',  name:'Detection engineering',      short:'Detection eng.',    colour:'var(--s1)'},
- {k:'cloud',name:'Cloud & infrastructure',     short:'Cloud & infra',     colour:'var(--s3)'},
- {k:'app',  name:'Application security',       short:'Application sec.',  colour:'var(--s2)'},
- {k:'off',  name:'Offensive & cryptanalysis',  short:'Offensive & crypto',colour:'var(--s5)'},
- {k:'net',  name:'Network security',           short:'Network sec.',      colour:'var(--s6)'}
+ {k:'det',  name:'Detection engineering',        short:'Detection eng.',     colour:'var(--s1)'},
+ {k:'cloud',name:'Cloud & infrastructure',       short:'Cloud & infra',      colour:'var(--s3)'},
+ {k:'app',  name:'Application security',         short:'Application sec.',   colour:'var(--s2)'},
+ {k:'off',  name:'Offensive & exploitation',     short:'Offensive & exploit',colour:'var(--s5)'},
+ {k:'for',  name:'Forensics & incident response',short:'Forensics & IR',     colour:'var(--s6)'},
+ {k:'ai',   name:'AI security',                  short:'AI security',        colour:'var(--s4)'}
 ];
 var HUE={},DOMNAME={},DOMSHORT={};
 DOMAINS.forEach(function(d){HUE[d.k]=d.colour;DOMNAME[d.k]=d.name;DOMSHORT[d.k]=d.short;});
-var SEVN={crit:'Critical',high:'High',med:'Medium',low:'Low'};
+/* amber = in progress (§3); blue = closed out */
+var STATUS={ongoing:{label:'Ongoing',cls:'high'},done:{label:'Complete',cls:'low'}};
 var PROJECTS=[
- {ref:'PRJ-693-04',sev:'crit',dk:'det',per:'2026 Q1&ndash;Q2',
-  t:'Behavioral detection of four C2 families, without signatures',
-  tech:['T1071.001','T1071.004','T1102','T1573','T1568.002'],
-  tools:'Zeek &middot; Suricata &middot; RITA &middot; KQL &middot; Sentinel',
-  problem:'Signature-based detection fails against modern C2 because the payload changes and the infrastructure rotates. What does not change easily is behavior: how often a beacon calls home, how much entropy its DNS queries carry, and what its TLS handshake looks like.',
-  arch:'Detection strategies built per family. Cobalt Strike via JA3/JA3S TLS fingerprinting and beacon jitter analysis. DNS tunneling via Shannon entropy thresholds of 4.0 to 4.2, tested against iodine and dnscat2 behavior. APT29 HAMMERTOSS via social-media DGA and steganographic payload staging in public repositories. HAFNIUM ProxyLogon via webshell C2 patterns.',
-  hard:'Produced KQL-based Sentinel detection logic for each family, mapped to MITRE ATT&amp;CK behavioral signatures, with tooling coverage across RITA, Zeek, and Suricata, plus a fully speaker-noted deck for handoff.',
-  next:'The logic was authored against documented behavior, not live emulation. The honest next step is standing up a Cobalt Strike or Sliver range and measuring false positive rate against real background traffic before any of it reaches a production tenant.'},
+ {ref:'PRJ-SPL-03',dk:'det',st:'ongoing',per:'Ongoing',
+  t:'Security monitoring homelab &mdash; Splunk SIEM',
+  tags:['Splunk','Correlation searches','Threat hunting','Dashboards'],
+  sum:'Built a personal Splunk environment to ingest and analyze security event logs; developed custom dashboards, correlation searches, and alert logic to simulate enterprise SOC detection workflows and practice threat hunting across multiple log sources.'},
 
- {ref:'PRJ-680-01',sev:'high',dk:'app',per:'2025 Q3&ndash;Q4',
-  t:'A Go e-commerce platform built security-first through five phases',
-  tech:['T1190','T1550.004','T1552.001','T1499'],
-  tools:'Go &middot; Fiber v2 &middot; GORM &middot; Docker &middot; STRIDE',
-  problem:'Most applications get a security review after they work. This one was specified, threat-modeled, designed, and only then built, to test whether front-loading security produces a materially different architecture.',
-  arch:'Full-stack MVC in Go with Fiber v2, GORM, SQLite, containerized in Docker. Five phases: security requirements specification with STRIDE and misuse cases, security design specification with data flow, ER diagrams, and a traceability matrix, then build, deployment, and user guide.',
-  hard:'Defense in depth throughout: bcrypt hashing, JWT sessions with HttpOnly, Secure, SameSite=Strict cookies, RBAC separating customer and admin, CSRF validation on every state-changing request, AES-256-GCM for PII at rest, TLS 1.2+ with HSTS and CSP, a multi-layer input validation pipeline including MIME and magic-number file checks kept deliberately separate from controller logic, and four-category structured JSON audit logging designed for ELK or Splunk ingestion.',
-  next:'STRIDE covered all six categories and five misuse cases traced cleanly to controls, but nothing was validated by an independent tester. A threat model I wrote, verified against an application I wrote, is a closed loop. The next iteration gets an outside adversary.'},
+ {ref:'PRJ-RAG-07',dk:'ai',st:'ongoing',per:'Ongoing',
+  t:'Private enterprise RAG assistant &mdash; access-controlled document retrieval',
+  tags:['Azure AI Search','Azure OpenAI','Prompt Shields','Log Analytics'],
+  sum:'Built a private retrieval-augmented generation assistant on Azure AI Search and Azure OpenAI, scoping document-level access so users retrieve only authorized content, adding blocklists and Prompt Shields against sensitive queries and prompt injection, and auditing every prompt and retrieval in Log Analytics.'},
 
- {ref:'PRJ-AUT-03',sev:'high',dk:'det',per:'2025 Q1',
-  t:'Cutting phishing triage by 30% with enrichment, not headcount',
-  tech:['T1566','T1204.002'],
-  tools:'Python &middot; VirusTotal API &middot; IP reputation &middot; LLM',
-  problem:'Analyst toil in phishing triage is mostly indicator lookup: pasting hashes, domains, and IPs into four consoles and reading the results. That work is deterministic, which means it should not be manual.',
-  arch:'Python pipeline pulling VirusTotal and IP reputation APIs to auto-classify phishing indicators, with LLM prompt logic layered on to prioritize alerts and generate contextual descriptions for the analyst.',
-  hard:'Reduced triage time by 30% in a simulated SOC environment. Deliberately mirrored real SOC workflow rather than optimizing a benchmark, so output lands where an analyst already looks.',
-  next:'The LLM prioritization step is the weak link: it is persuasive whether or not it is correct, and I did not measure how often it ranked a true positive below a false one. Any production version needs the model to cite the indicator that drove its ranking so an analyst can overrule it.'},
+ {ref:'PRJ-DFR-05',dk:'for',st:'done',per:'2026 Q1&ndash;Q2',
+  t:'Digital forensics &amp; C2 traffic reconstruction of a simulated intrusion',
+  tags:['Wireshark','Disk image forensics','IOC extraction','C2 reconstruction'],
+  sum:'Performed disk image forensic analysis and reconstructed command-and-control activity from packet captures in Wireshark, extracting IOCs and documenting the investigation end to end.'},
 
- {ref:'PRJ-EKS-02',sev:'med',dk:'cloud',per:'2025 Q4',
-  t:'Making a distributed EKS system explain itself',
-  tech:['T1609','T1611','T1613'],
-  tools:'AWS EKS &middot; Kubernetes RBAC &middot; IRSA &middot; OpenTelemetry',
-  problem:'Containerized microservices generate enormous telemetry and almost no security visibility. Infrastructure metrics tell you a pod restarted; they do not tell you why a service started talking to something it never talked to before.',
-  arch:'Distributed microservices on AWS EKS with least privilege enforced through Kubernetes RBAC and IAM Roles for Service Accounts, plus OpenTelemetry pipelines and centralized logging for end-to-end tracing.',
-  hard:'Bridged infrastructure telemetry to application-layer monitoring, so anomalous service behavior became investigable rather than merely observable.',
-  next:'There is no runtime sensor. RBAC and IRSA reduce blast radius, but a container escape would be invisible. Falco or an equivalent belongs in this stack.'},
+ {ref:'PRJ-BRP-04',dk:'app',st:'done',per:'2025 Q3&ndash;Q4',
+  t:'BuildRight PC &mdash; secure e-commerce web application',
+  tags:['Go','Fiber','GORM','STRIDE','AES-256-GCM','TLS 1.2+','OWASP'],
+  sum:'Designed and built a secure e-commerce web application in Go (Fiber, GORM) applying STRIDE threat modeling, AES-256-GCM encryption, TLS 1.2+, and OWASP secure-coding controls across a defense-in-depth architecture.'},
 
- {ref:'PRJ-PUR-01',sev:'med',dk:'det',per:'2024 Q4',
-  t:'Purple team: turning pentest findings into detection rules',
-  tech:['T1210','T1078','T1098'],
-  tools:'MITRE ATT&amp;CK &middot; correlation rules',
-  problem:'Penetration test reports usually end at the finding. The finding is the least useful part; the useful part is what telemetry the attack generated and whether anything was watching for it.',
-  arch:'Simulated multi-stage enterprise attack scenarios spanning credential access, lateral movement, and persistence, then reconstructed full attack timelines by correlating identity, endpoint, and network telemetry.',
-  hard:'Translated every finding into detection engineering output: MITRE ATT&amp;CK-aligned correlation rules closing the specific blind spots the simulation exposed, with actionable remediation recommendations.',
-  next:'The simulation followed one attack path, and detection built against a single path overfits to it. Running three variants of the same objective would show which rules generalize and which only catch my own tradecraft.'},
+ {ref:'PRJ-EKS-01',dk:'cloud',st:'done',per:'2025 Q3&ndash;Q4',
+  t:'AWS EKS distributed system security &amp; observability',
+  tags:['AWS EKS','IRSA','Kubernetes RBAC','CIS Benchmarks','Python'],
+  sum:'Deployed and hardened a distributed microservices environment on AWS EKS: remediated IAM misconfigurations through least-privilege IRSA, enforced Kubernetes RBAC guardrails, implemented CIS Benchmark controls for container workloads, and automated compliance validation with custom Python CLI tooling.'},
 
- {ref:'PRJ-REV-01',sev:'low',dk:'off',per:'2025 Q1',
-  t:'Reading exploits closely enough to detect them',
-  tech:['T1068','T1203','T1055'],
-  tools:'Ghidra &middot; GDB &middot; pwndbg &middot; ROP',
-  problem:'You cannot write credible behavioral detection for memory-corruption exploitation if you have never built the exploit. The detection engineer who has only read about ROP will write a rule against what they imagine it looks like.',
-  arch:'ELF binary analysis in Ghidra, GDB, and pwndbg to locate vulnerabilities and construct ROP chains for control-flow hijacking, with kernel privilege escalation simulated in controlled Linux environments via prepare_kernel_cred and commit_creds.',
-  hard:'Studied PLT/GOT mechanics and how lazy binding enables GOT overwrite, then examined how ASLR, NX, and stack canaries interact with each technique. Generated behavioral signatures from the resulting exploit patterns for IDS rule development.',
-  next:'Signatures were derived from lab binaries with known-good ground truth. Real telemetry is dirtier, and I have not measured these against production endpoint data.'},
+ {ref:'PRJ-REV-06',dk:'off',st:'done',per:'2025 Q1&ndash;Q2',
+  t:'Binary reverse engineering &amp; exploit development',
+  tags:['Ghidra','GDB','pwndbg','ROP chains'],
+  sum:'Reverse engineered binaries using Ghidra, GDB, and pwndbg, analyzing memory-corruption vulnerabilities and constructing ROP chains to bypass protections in a controlled coursework environment.'},
 
- /* HANDOFF §8.5 — five further CV projects are not written up yet. They are
-    carried here as domain-only stubs so the donut, the n= count and the
-    register footer all stay derived from PROJECTS.length. No title, period,
-    impact or claim is invented for a stub (§1). Replace a stub with a full
-    entry as each write-up lands and every count follows automatically. */
- {dk:'cloud'},{dk:'cloud'},{dk:'app'},{dk:'off'},{dk:'net'}
+ {ref:'PRJ-PEN-02',dk:'off',st:'done',per:'2024 Q4',
+  t:'Penetration testing &amp; vulnerability assessment of an enterprise network',
+  tags:['MITRE ATT&CK','Credential Access','Lateral Movement','Persistence','NIST'],
+  sum:'Simulated multi-stage attack scenarios (credential access, lateral movement, persistence) mapped to MITRE ATT&amp;CK, reconstructed full attack timelines by correlating identity, endpoint, and network telemetry, and delivered NIST-aligned architectural remediation guidance.'}
 ];
-var WRITTEN=PROJECTS.filter(function(p){return !!p.problem;});
 var reg=document.getElementById('reg');
-WRITTEN.forEach(function(p,i){
+PROJECTS.forEach(function(p,i){
   var r=el('div','reg-row');
   var b=el('button','reg-r');
+  var stat=STATUS[p.st];
   b.setAttribute('aria-expanded','false');
   b.innerHTML='<span class="reg-x">&#9656;</span>'+
     '<span class="id">'+p.ref+'</span>'+
     '<span class="nm wide">'+p.t+'</span>'+
     '<span class="sub" style="color:'+HUE[p.dk]+'">'+esc(DOMSHORT[p.dk])+'</span>'+
     '<span class="num">'+p.per+'</span>'+
-    '<span class="sv '+p.sev+'"><i></i>'+SEVN[p.sev]+'</span>';
+    '<span class="sv '+stat.cls+'"><i></i>'+stat.label+'</span>';
   var d=el('div','reg-d');
-  d.innerHTML='<div class="reg-in">'+
-    '<div><div class="fk">Problem</div><div class="fv">'+p.problem+'</div></div>'+
-    '<div><div class="fk">Architecture</div><div class="fv">'+p.arch+'</div></div>'+
-    '<div><div class="fk">What I hardened</div><div class="fv">'+p.hard+'</div></div>'+
-    '<div><div class="fk">What I would change</div><div class="fv">'+p.next+'</div></div>'+
-    '<div class="tq">'+p.tech.map(function(x){return '<span class="tag pv" data-pivot="'+x+'">'+x+'</span>';}).join('')+
-    '<span class="tag" style="color:var(--muted)">'+p.tools+'</span></div></div>';
+  d.innerHTML='<div class="reg-in one">'+
+    '<div><div class="fk">Summary</div><div class="fv">'+p.sum+'</div></div>'+
+    '<div class="tq">'+p.tags.map(function(x){
+      return '<span class="tag pv" data-pivot="'+esc(x)+'">'+esc(x)+'</span>';}).join('')+
+    '</div></div>';
   b.addEventListener('click',function(){
     b.setAttribute('aria-expanded',r.classList.toggle('open')?'true':'false');
   });
-  r.dataset.dom=p.dk;r.dataset.sev=p.sev;
+  r.dataset.dom=p.dk;r.dataset.st=p.st;
   r.dataset.blob=(p.t+' '+DOMNAME[p.dk]+' '+DOMSHORT[p.dk]+' '+p.ref+' '+p.per+' '+
-    p.tools+' '+p.tech.join(' ')+' '+p.problem+' '+p.arch+' '+p.hard+' '+p.next)
+    stat.label+' '+p.tags.join(' ')+' '+p.sum)
     .replace(/&[a-z]+;/g,' ').toLowerCase();
   r.appendChild(b);r.appendChild(d);reg.appendChild(r);
   if(i===0){r.classList.add('open');b.setAttribute('aria-expanded','true');}
@@ -1268,17 +1298,23 @@ var DOM=DOMAINS.map(function(d){
 })();
 
 /* ---------------- deliverables ---------------- */
-var TC={KQL:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
-var DELIVERABLES=[['2026 Q2','KQL','Sentinel detection logic &mdash; Cobalt Strike, DNS tunneling, HAMMERTOSS, ProxyLogon','ENPM693'],
- ['2026 Q2','CODE','rsa_breaker.py &mdash; Pollard-Brent factorization and shared-prime GCD recovery','ENPM693'],
- ['2026 Q1','DOC','Cryptographic construction analysis &mdash; MAC vs. signature, MAC-then-Encrypt','ENPM693'],
- ['2026 Q1','LAB','Multi-zone stateful iptables ruleset with probe-validated evidence','ENPM693'],
- ['2025 Q4','DOC','Security Requirements Specification &mdash; STRIDE model, five misuse cases','ENPM680'],
- ['2025 Q4','DOC','Security Design Specification &mdash; data flow, ER diagrams, traceability matrix','ENPM680'],
- ['2025 Q4','LAB','Hardened EKS environment &mdash; RBAC, IRSA, OpenTelemetry pipelines','UMD'],
- ['2025 Q1','CODE','Alert enrichment pipeline &mdash; VirusTotal and IP reputation auto-classification','UMD'],
- ['2024 Q4','KQL','ATT&amp;CK-aligned correlation rules derived from attack simulation','UMD'],
- ['2024 Q4','DOC','AWS security assessment &mdash; IAM, security groups, S3, encryption findings','UMD']
+/* Artifacts named by the CV's own project and role bullets. Nothing here is
+   an artifact the CV does not claim. RULE = detection content, LAB = a built
+   and hardened environment, DOC = written deliverable, CODE = tooling. */
+var TC={RULE:'var(--s1)',CODE:'var(--s3)',DOC:'var(--s2)',LAB:'var(--s6)'};
+var DELIVERABLES=[
+ ['Ongoing','RULE','Splunk correlation searches, dashboards and alert logic simulating SOC detection workflows','Homelab'],
+ ['Ongoing','CODE','Access-controlled RAG assistant with Prompt Shields and full prompt/retrieval audit','RAG assistant'],
+ ['2026 Q2','DOC','Forensic investigation write-up &mdash; disk image analysis and C2 reconstruction with extracted IOCs','Digital forensics'],
+ ['2026 Q1','DOC','Incident response runbook codifying end-to-end containment, adopted by the team','Nurix'],
+ ['2025 Q4','CODE','Python CLI tooling automating CIS Benchmark compliance validation on EKS','AWS EKS'],
+ ['2025 Q4','DOC','STRIDE threat model and defense-in-depth design for BuildRight PC','BuildRight PC'],
+ ['2025 Q4','LAB','Hardened EKS environment &mdash; least-privilege IRSA and Kubernetes RBAC guardrails','AWS EKS'],
+ ['2025 Q3','CODE','Python and PowerShell automation for compliance checks and telemetry ingestion','Nurix'],
+ ['2025 Q2','LAB','ROP chains and memory-corruption analysis in a controlled environment','Binary RE'],
+ ['2024 Q4','DOC','NIST-aligned architectural remediation guidance from attack simulation','Pen test'],
+ ['2024 Q2','RULE','35+ ArcSight SmartConnectors normalizing ingestion from 100+ assets','Microland'],
+ ['2024 Q2','DOC','KQL-driven risk dashboards and post-incident reviews for C-suite stakeholders','Microland']
 ];
 DELIVERABLES.forEach(function(d){
   document.getElementById('deliv').appendChild(row('88px 52px 1fr 130px',
@@ -1298,10 +1334,13 @@ document.getElementById('delivct').innerHTML=
     '<span class="wide"><span class="nm">'+d[0]+'</span><br><span class="sub">'+d[1]+'</span></span>'+
     '<span class="num">'+d[2]+'</span><span class="num">'+d[3]+'</span>'));
 });
+/* Credentials exactly as listed by the CV; MiCert and ACM are its Achievements. */
 var CERTS=[
- ['Microland MiCert','Awarded for performance in managed security operations','low','Awarded'],
- ['SC-200 &mdash; Microsoft Security Operations Analyst','Sentinel, Defender XDR, Entra ID threat protection','med','In progress'],
- ['AZ-500 &mdash; Azure Security Engineer Associate','Identity, platform protection, data and application security','med','In progress']
+ ['Microland MiCert','Cybersecurity Technology Delivery Unit &mdash; among the unit&rsquo;s highest individual distinctions','low','Awarded'],
+ ['AZ-900 &mdash; Microsoft Azure Fundamentals','Azure core services, security, and governance','low','Awarded'],
+ ['TEQIP-III SSTP','Cybersecurity &amp; Penetration Testing','low','Awarded'],
+ ['SC-300 &mdash; Microsoft Identity and Access Administrator','Entra ID, Conditional Access, identity governance','med','In progress'],
+ ['ACM Student Chapter','Championed initiatives attracting 100+ new members annually','info','Recognition']
 ];
 CERTS.forEach(function(c){
   document.getElementById('certs').appendChild(row('1fr 104px',
@@ -1317,15 +1356,20 @@ CERTS.forEach(function(c){
 })();
 
 /* ---------------- skills: bars + inventory ---------------- */
+/* Eleven inventory domains, verbatim from the CV's Technical Skills section.
+   Bar length is items.length / max(items.length) - inventory, not proficiency. */
 var SK=[
- ['SIEM &amp; detection','var(--s1)',['Microsoft Sentinel','KQL','Analytics Rules','Workbooks','Data Connectors','SentinelOne','Alert triage','Detection engineering']],
- ['Network &amp; traffic','var(--s6)',['TCP/IP','DNS','HTTP/S','iptables','Zeek','Suricata','RITA','Wireshark','nmap','JA3/JA3S']],
- ['Cloud &amp; containers','var(--s3)',['Azure','AWS','EKS','Kubernetes RBAC','IRSA','OpenTelemetry','Docker','AWS WAF','VPC controls']],
- ['Code','var(--s2)',['Python','KQL','Bash','SQL','Go (Fiber, GORM)','JavaScript','Django','REST APIs']],
- ['Offensive','var(--s5)',['Ghidra','GDB','pwndbg','ROP construction','Buffer overflow','RSA cryptanalysis','C2 behavior']],
- ['Identity &amp; access','var(--s4)',['Entra ID','Conditional Access','PIM','Privileged identity review','User lifecycle','Graph API']],
- ['Endpoint','var(--s1)',['Defender for Endpoint','Microsoft Intune','SentinelOne EDR','Live response','Device isolation']],
- ['Frameworks','var(--s2)',['MITRE ATT&amp;CK','STRIDE','Misuse case analysis','Architecture review','NIST key guidance']]
+ ['Cloud security','var(--s3)',['AWS IAM','AWS EKS','CloudTrail','AWS WorkSpaces','Security Hub','AWS SSO','Azure','Entra ID','Conditional Access','Just-in-Time access','Privileged Identity Management','Zero Trust architecture','Secure architecture review','Defender for Cloud']],
+ ['Identity &amp; access','var(--s4)',['Entra ID / Azure AD','Conditional Access','PIM / JIT','SSO federation','Identity lifecycle','Veza','BeyondTrust PRA']],
+ ['Security ops &amp; detection','var(--s1)',['Microsoft Sentinel','ArcSight ESM','Splunk','SentinelOne','Defender for Endpoint','Defender for Identity','Defender for Office','Detection engineering','KQL','Threat hunting','Incident response','MITRE ATT&amp;CK']],
+ ['Automation &amp; SOAR','var(--s3)',['Python','Go','PowerShell','Bash','LogicHub','Azure Logic Apps','API integration','Compliance automation']],
+ ['Email &amp; awareness','var(--s2)',['Abnormal Security','Defender for Office','KnowBe4','SPF','DKIM','DMARC']],
+ ['Web &amp; proxy','var(--s5)',['Zscaler Internet Access','Web proxy log analysis']],
+ ['AI security','var(--s4)',['Azure AI Search','Azure OpenAI','Prompt Shields','Groundedness detection','RAG access control','Log Analytics audit logging']],
+ ['Networking &amp; infra','var(--s6)',['TCP/IP','OSI model','DNS','HTTP/S','Firewall log analysis','IDS/IPS','VPN','Network telemetry','Kubernetes','Helm','IRSA','Secrets Store CSI','Container security']],
+ ['Vuln mgmt &amp; frameworks','var(--s2)',['Tenable','CVSS','EPSS','OWASP','NIST CSF','ISO 27001','CIS Benchmarks','MITRE ATT&amp;CK','HIPAA','SOC 2','GRC']],
+ ['Reverse eng. &amp; forensics','var(--s5)',['Ghidra','GDB','pwndbg','ROP chains','Wireshark','Disk image forensics','IOC extraction']],
+ ['AI tooling','var(--s1)',['GitHub Copilot','ChatGPT','Claude']]
 ];
 (function(){
   var bars=document.getElementById('bars'),skg=document.getElementById('skgrid');
@@ -1347,8 +1391,8 @@ var SK=[
   var now=new Date();
   set('scopepill',MONTHS+' mo. in scope');
   document.getElementById('kpi-tenure').dataset.count=MONTHS;
-  document.getElementById('kpi-estate').dataset.count=CV.systemsUnderSIEM;
-  document.getElementById('kpi-triage').dataset.count=CV.triageReduction;
+  document.getElementById('kpi-estate').dataset.count=CV.endpointsUnderSIEM;
+  document.getElementById('kpi-mttr').dataset.count=CV.mttrReduction;
   document.getElementById('expct').innerHTML=
     CV.roles.length+' assignments &middot; '+MONTHS+' months';
   /* separator lives inside the span so nothing dangles if JS never runs */
@@ -1385,8 +1429,8 @@ var SK=[
 })();
 
 /* ---------------- assignee ---------------- */
-[['Name','Julian Joseph'],['Role','Detection Engineering &middot; Security Operations'],
- ['Location','Washington, D.C. metro'],
+[['Name','Julian Joseph'],['Role','Security Engineer &middot; Cloud &amp; Detection'],
+ ['Location',CV.location],
  ['Email','<a href="mailto:'+CV.email+'">'+CV.email+'</a>'],
  ['Alt. email','<a href="mailto:'+CV.emailAlt+'">'+CV.emailAlt+'</a>'],
  ['LinkedIn','<a href="https://linkedin.com/in/julianjoseph1">julianjoseph1</a>'],
@@ -1398,37 +1442,43 @@ var SK=[
 
 /* ---------------- query engine: drives the register ---------------- */
 (function(){
-  var selD=document.getElementById('q-dom'),selS=document.getElementById('q-sev'),
+  var selD=document.getElementById('q-dom'),selS=document.getElementById('q-st'),
       inT=document.getElementById('q-txt'),out=document.getElementById('qout'),
       stat=document.getElementById('qstat'),foot=document.getElementById('regfoot'),
       regEl=document.getElementById('reg');
+  /* Domain options are generated from DOMAINS in register order, so adding a
+     project in a new domain populates the filter with no other edit. */
+  DOMAINS.forEach(function(d){
+    if(!PROJECTS.some(function(p){return p.dk===d.k;}))return;
+    var o=document.createElement('option');
+    o.value=d.k;o.textContent=d.name;selD.appendChild(o);
+  });
   var rows=Array.prototype.slice.call(regEl.querySelectorAll('.reg-row'));
-  var total=rows.length;                          /* rows in the register */
-  var pending=PROJECTS.length-total;              /* CV projects not yet written up */
+  var total=rows.length;
   var empty=el('div','empty','No projects match this query. Broaden the filter or reset.');
   empty.style.display='none';regEl.appendChild(empty);
 
-  function kql(dom,sev,txt,shown){
+  function kql(dom,st,txt,shown){
     var L=['<span class="kw">ProjectRegister</span>'];
     if(dom) L.push('<span class="op">|</span> where Domain <span class="op">==</span> <span class="st">"'+esc(DOMNAME[dom])+'"</span>');
-    if(sev) L.push('<span class="op">|</span> where Impact <span class="op">==</span> <span class="st">"'+SEVN[sev]+'"</span>');
+    if(st)  L.push('<span class="op">|</span> where Status <span class="op">==</span> <span class="st">"'+STATUS[st].label+'"</span>');
     if(txt) L.push('<span class="op">|</span> search <span class="st">"'+esc(txt)+'"</span>');
-    L.push('<span class="op">|</span> project Ref, Project, Domain, Period, Impact');
-    L.push('<span class="op">|</span> order by Impact <span class="kw">desc</span>');
+    L.push('<span class="op">|</span> project Ref, Project, Domain, Period, Status');
+    L.push('<span class="op">|</span> order by Period <span class="kw">desc</span>');
     L.push('<span class="cm">// '+shown+' of '+total+' rows returned</span>');
     return L.join('\n');
   }
   function run(){
     var t0=(window.performance&&performance.now)?performance.now():0;
-    var dom=selD.value,sev=selS.value,txt=inT.value.trim(),q=txt.toLowerCase(),shown=0;
+    var dom=selD.value,st=selS.value,txt=inT.value.trim(),q=txt.toLowerCase(),shown=0;
     rows.forEach(function(r){
-      var ok=(!dom||r.dataset.dom===dom)&&(!sev||r.dataset.sev===sev)&&
+      var ok=(!dom||r.dataset.dom===dom)&&(!st||r.dataset.st===st)&&
              (!q||r.dataset.blob.indexOf(q)>-1);
       r.style.display=ok?'':'none';
       if(ok)shown++;
     });
     empty.style.display=shown?'none':'';
-    /* Real measurement (HANDOFF §6.1) — never fabricated. Filtering six rows
+    /* Real measurement (HANDOFF §6.1) — never fabricated. Filtering seven rows
        genuinely lands below the clock's resolution, so report that honestly
        as a bound rather than printing a flat "0.0" that reads as a stub. */
     var ms=null;
@@ -1436,10 +1486,10 @@ var SK=[
       var dt=performance.now()-t0;
       ms=dt<0.01?'<0.01':dt.toFixed(2);
     }
-    out.innerHTML=kql(dom,sev,txt,shown);
+    out.innerHTML=kql(dom,st,txt,shown);
     stat.textContent=shown+' of '+total+' rows';
+    /* Every CV project is now written up, so there is no "N more on request". */
     foot.textContent=shown+' of '+total+' rows'+
-      (pending>0?' \u00B7 '+pending+' more available on request':'')+
       ' \u00B7 executed '+new Date().toISOString().slice(11,19)+' UTC'+
       (ms!==null?' \u00B7 '+ms+' ms':'');
     /* cross-filter the donut + legend */
@@ -1457,7 +1507,7 @@ var SK=[
   document.getElementById('q-reset').addEventListener('click',function(){
     selD.value='';selS.value='';inT.value='';run();
   });
-  /* click a technique tag to pivot the query onto it */
+  /* click any tool or tactic tag to pivot the query onto it (HANDOFF §6.1) */
   regEl.addEventListener('click',function(e){
     var tg=e.target.closest?e.target.closest('.tag.pv'):null;
     if(!tg)return;
@@ -1538,14 +1588,16 @@ function showAll(){
 })();
 
 /* ---------------- KPI count-up ---------------- */
+/* thousands separators so 5000 reads as 5,000 at 38px tabular-nums */
+function fmt(n){return n.toLocaleString('en-US');}
 document.querySelectorAll('[data-count]').forEach(function(e){
   var target=+e.dataset.count;
-  if(instant){e.textContent=target;return;}
+  if(instant){e.textContent=fmt(target);return;}
   var n=0;
   function step(){
     n+=Math.max(1,Math.ceil((target-n)/7));
-    if(n>=target){e.textContent=target;return;}
-    e.textContent=n;requestAnimationFrame(step);
+    if(n>=target){e.textContent=fmt(target);return;}
+    e.textContent=fmt(n);requestAnimationFrame(step);
   }
   setTimeout(step,900);
 });
