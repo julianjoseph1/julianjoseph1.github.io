@@ -167,7 +167,8 @@ h1,h2,h3{margin:0;font-weight:600}
 
 .p{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;
   min-width:0}
-.js .p{opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+.js .p{opacity:0;transform:translateY(6px);
+  transition:opacity .4s ease,transform .4s ease,border-color .2s ease,box-shadow .2s ease}
 .js .p.in{opacity:1;transform:none}
 .p-h{display:flex;align-items:center;gap:9px;min-height:36px;padding:0 12px;flex:none;
   background:var(--surface-2);border-bottom:1px solid var(--line);
@@ -408,8 +409,65 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
   background:var(--surface);border:1px solid var(--line-2);border-left:2px solid var(--high);
   padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--text)}
 
+/* ============ interaction motion ============
+   Dashboard affordances only: states that confirm a surface is live and that
+   panels are linked to each other. No decorative movement — everything here
+   either responds to the pointer or marks a change the user just caused.
+   All of it is switched off by .no-anim (prefers-reduced-motion). */
+
+/* Panels acknowledge the pointer. Border only, no lift: a transform here
+   would make a 12-column mosaic feel unstable on mouse-through. */
+.p{transition:border-color .2s ease,box-shadow .2s ease}
+.p:hover{border-color:var(--line-2);box-shadow:0 6px 22px rgba(0,0,0,.32)}
+
+/* Section rules draw themselves in as you reach each section. */
+.js .secbar .ln{transform:scaleX(0);transform-origin:left center;
+  transition:transform .75s cubic-bezier(.25,.8,.25,1)}
+.js .secbar.in .ln{transform:scaleX(1)}
+
+/* Donut <-> legend cross-highlight: hovering either side isolates the domain
+   on both, which is the point of a linked dashboard (HANDOFF §3). Suppressed
+   while a Domain filter is active so it cannot fight the query's own dimming. */
+.donut circle{transition:opacity .3s ease,stroke-width .2s ease}
+.donut circle.hot{stroke-width:18}
+.donut circle.cool,.lg-i.cool{opacity:.3}
+.lg-i{transition:opacity .3s ease,color .2s ease}
+.lg-i.hot{color:var(--text-hi)}
+.lg-i.hot .lg-v{color:var(--text)}
+
+/* Rows re-enter when the query changes the result set, so a filter reads as
+   a query that executed rather than rows silently disappearing. */
+@keyframes qrow{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.reg-row.qin{animation:qrow .26s ease both;animation-delay:var(--qi,0ms)}
+
+/* The KQL block flashes an accent edge on execution — console feedback. */
+@keyframes qflash{from{box-shadow:inset 2px 0 0 var(--accent)}
+  to{box-shadow:inset 2px 0 0 rgba(76,154,255,0)}}
+.q.exec{animation:qflash .65s ease}
+
+/* In-progress markers breathe, the way an open item does in a SIEM queue.
+   Amber only, and only the 8px dot — never the label. */
+@keyframes svpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sv.high i{animation:svpulse 2.6s ease-in-out infinite}
+
+/* Gantt bars and skill rows respond to the pointer. */
+.gt-b{transition:filter .2s ease}
+.gt-b:hover{filter:brightness(1.22)}
+.hb-k,.hb-t{transition:color .2s ease,border-color .2s ease}
+.hb:hover .hb-k{color:var(--text-hi)}
+.hb:hover .hb-t{border-color:var(--line-2)}
+
+/* A slow ping on the most recent datapoint: the one genuinely "latest"
+   value on the page, so the only place a live marker is honest. */
+@keyframes mkping{0%{r:3.2;opacity:.5}70%{r:10;opacity:0}100%{r:10;opacity:0}}
+.chart .mk-ring{fill:none;stroke:var(--s2);stroke-width:1.2;opacity:0}
+.chart.on .mk-ring{animation:mkping 3s ease-out infinite;animation-delay:1.6s}
+
 /* ============ boot motion ============
    Every initial-hidden state is .js-scoped — see the head comment. */
+/* returning visitor: same reveals, without the first-visit stagger */
+.quick [data-rise],.quick .ab-right>*,.quick .crumb{transition-delay:0s!important}
+.ent-name.nofx .ch{transition:none!important;transition-delay:0s!important}
 .js [data-rise]{opacity:0;transform:translateY(7px)}
 .booted [data-rise]{opacity:1;transform:none;
   transition:opacity .5s ease,transform .5s cubic-bezier(.25,.8,.25,1);
@@ -420,7 +478,14 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
 .no-anim .ent-name .ch,.no-anim [data-rise],.no-anim .ab-right>*,.no-anim .crumb{
   opacity:1!important;transform:none!important;transition:none!important}
 .no-anim .caret{display:none}
-.no-anim .p{opacity:1;transform:none}
+.no-anim .p{opacity:1;transform:none;transition:none}
+/* the added interaction motion, all off under prefers-reduced-motion.
+   Hover colour changes stay — they convey state, not movement. */
+.no-anim .secbar .ln{transform:none!important;transition:none}
+.no-anim .sv.high i,.no-anim .led{animation:none}
+.no-anim .reg-row.qin,.no-anim .q.exec{animation:none}
+.no-anim .chart .mk-ring{display:none}
+.no-anim .gt-b,.no-anim .donut circle,.no-anim .lg-i{transition:none}
 .no-anim .gt-b{clip-path:none}
 .no-anim .hb-f{transition:none}
 .no-anim .donut{transform:none;opacity:1}
@@ -531,6 +596,7 @@ html:not(.js) .nojs{display:block;margin-bottom:10px;
 .chart .ln{stroke-dashoffset:0!important}
 .chart .area,.chart .mk,.chart .anno,.chart .adash{opacity:1!important}
 .reg-d{max-height:none!important}
+.secbar .ln{transform:none!important}
 </style></noscript>
 
 <script type="application/ld+json">
@@ -1004,7 +1070,11 @@ var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
    out again. Wrapped because storage throws in some privacy modes. */
 var seen=false;
 try{seen=window.sessionStorage.getItem('jj.booted')==='1';}catch(e){}
-var instant=reduce||seen;
+/* `seen` skips only the entrance choreography — the name typing itself out
+   and the staggered app-bar reveal. It deliberately does NOT skip the scroll
+   choreography: charts drawing, gantt bars wiping and panels rising are tied
+   to scroll position, so they are what makes the page feel live on every
+   visit rather than only the first. Only prefers-reduced-motion stops those. */
 var NS='http://www.w3.org/2000/svg';
 function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
 function svgEl(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
@@ -1167,6 +1237,8 @@ tick();setInterval(tick,1000);
     var a1=svgEl('text',{'class':'anno',x:X((pi+pEnd)/2),y:Y(pv)-13,'text-anchor':'middle'});
     a1.textContent='M.Eng · no accrual';svg.appendChild(a1);
   }
+  /* ping sits under the marker so the solid dot always reads on top */
+  svg.appendChild(svgEl('circle',{'class':'mk-ring',cx:X(n-1),cy:Y(last[1]),r:3.2}));
   svg.appendChild(svgEl('circle',{'class':'mk',cx:X(n-1),cy:Y(last[1]),r:3.2}));
   var a2=svgEl('text',{'class':'anno',x:X(n-1)-5,y:Y(last[1])-8,'text-anchor':'end'});
   a2.textContent=last[1]+' mo';svg.appendChild(a2);
@@ -1295,6 +1367,30 @@ var DOM=DOMAINS.map(function(d){
   svg.setAttribute('aria-label',total+' projects by domain: '+
     DOM.map(function(d){return d.name.replace(/&/g,'and')+' '+d.n;}).join(', ')+'.');
   set('dcount','n='+total);
+
+  /* Cross-highlight: hovering a segment or its legend row isolates that
+     domain on both. Skipped while the Domain filter is dimming segments, so
+     the two mechanisms never fight over the same elements. */
+  var segs=svg.querySelectorAll('circle[data-dom]'),
+      legs=lg.querySelectorAll('.lg-i');
+  function highlight(k){
+    if(svg.querySelector('circle.dim'))return;      /* query filter owns it */
+    [].forEach.call(segs,function(c){
+      c.classList.toggle('hot',k!==null&&c.dataset.dom===k);
+      c.classList.toggle('cool',k!==null&&c.dataset.dom!==k);
+    });
+    [].forEach.call(legs,function(l){
+      l.classList.toggle('hot',k!==null&&l.dataset.dom===k);
+      l.classList.toggle('cool',k!==null&&l.dataset.dom!==k);
+    });
+  }
+  function bind(nodes){
+    [].forEach.call(nodes,function(n){
+      n.addEventListener('mouseenter',function(){highlight(n.dataset.dom);});
+      n.addEventListener('mouseleave',function(){highlight(null);});
+    });
+  }
+  bind(segs);bind(legs);
 })();
 
 /* ---------------- deliverables ---------------- */
@@ -1457,6 +1553,26 @@ var SK=[
   var total=rows.length;
   var empty=el('div','empty','No projects match this query. Broaden the filter or reset.');
   empty.style.display='none';regEl.appendChild(empty);
+  var lastSig=null;
+
+  /* Re-enter the surviving rows, staggered, whenever the result set actually
+     changes — so a filter reads as a query that ran. Gated on the signature
+     so typing a word does not restart the animation on every keystroke. */
+  function restage(){
+    if(reduce)return;
+    var sig=rows.map(function(r){return r.style.display==='none'?'0':'1';}).join('');
+    if(sig===lastSig)return;
+    lastSig=sig;
+    var k=0;
+    rows.forEach(function(r){
+      r.classList.remove('qin');
+      if(r.style.display==='none')return;
+      void r.offsetWidth;                       /* restart the animation */
+      r.style.setProperty('--qi',(k++*26)+'ms');
+      r.classList.add('qin');
+    });
+    out.classList.remove('exec');void out.offsetWidth;out.classList.add('exec');
+  }
 
   function kql(dom,st,txt,shown){
     var L=['<span class="kw">ProjectRegister</span>'];
@@ -1499,6 +1615,7 @@ var SK=[
     document.querySelectorAll('#dlegend .lg-i').forEach(function(l){
       l.classList.toggle('dim',!!dom&&l.dataset.dom!==dom);
     });
+    restage();
   }
   selD.addEventListener('change',run);
   selS.addEventListener('change',run);
@@ -1544,10 +1661,18 @@ function showAll(){
   });
   var cr=document.querySelector('.crumb');if(cr)cr.style.setProperty('--d','90ms');
 
-  if(instant){
+  if(reduce){
     document.body.classList.add('no-anim','booted');
     if(nm)nm.classList.add('go');
     showAll();
+    return;
+  }
+  if(seen){
+    /* returning visitor: name and app bar arrive immediately, scroll
+       choreography below is left switched on */
+    document.body.classList.add('booted','quick');
+    if(nm)nm.classList.add('go','nofx');
+    if(caret)caret.parentNode.removeChild(caret);
     return;
   }
   try{window.sessionStorage.setItem('jj.booted','1');}catch(e){}
@@ -1561,7 +1686,7 @@ function showAll(){
 
 /* ---------------- reveal on scroll ---------------- */
 (function(){
-  if(instant)return;
+  if(reduce)return;
   if(!('IntersectionObserver' in window)){showAll();return;}
   var po=new IntersectionObserver(function(es){
     es.forEach(function(e,i){
@@ -1579,6 +1704,15 @@ function showAll(){
     },{threshold:th});
     o.observe(node);
   }
+  /* section rules draw in on approach */
+  var so=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting)return;
+      e.target.classList.add('in');so.unobserve(e.target);
+    });
+  },{threshold:.4});
+  document.querySelectorAll('.secbar').forEach(function(s){so.observe(s);});
+
   once(document.getElementById('areachart'),function(n){n.classList.add('on');},.25);
   once(document.getElementById('donut'),function(n){n.classList.add('on');},.3);
   once(document.getElementById('gt'),function(n){n.classList.add('on');},.25);
@@ -1592,14 +1726,14 @@ function showAll(){
 function fmt(n){return n.toLocaleString('en-US');}
 document.querySelectorAll('[data-count]').forEach(function(e){
   var target=+e.dataset.count;
-  if(instant){e.textContent=fmt(target);return;}
+  if(reduce){e.textContent=fmt(target);return;}
   var n=0;
   function step(){
     n+=Math.max(1,Math.ceil((target-n)/7));
     if(n>=target){e.textContent=fmt(target);return;}
     e.textContent=fmt(n);requestAnimationFrame(step);
   }
-  setTimeout(step,900);
+  setTimeout(step,seen?140:900);
 });
 
 /* ---------------- nav active state ---------------- */
